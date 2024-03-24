@@ -1,0 +1,12 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "ES6",
+    "removeComments": false,
+    "sourceMap": true,
+    "outDir": "wwwroot/js/transpiled"
+  },
+  "include": [
+    "TypeScript/**/*"
+  ]
+}

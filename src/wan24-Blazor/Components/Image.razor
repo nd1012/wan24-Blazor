@@ -1,0 +1,24 @@
+﻿@inherits Box
+
+@if (UseImageSection is not null)// Inheriting component will render
+{
+    <SectionContent SectionName=@UseBoxSection>
+        <SectionOutlet SectionName=@UseImageSection />
+    </SectionContent>
+}
+else if (RenderSvg)// SVG is being rendered
+{
+    <SectionContent SectionName=@UseBoxSection>
+        @((MarkupString)SvgXml!)
+    </SectionContent>
+}
+else if(ChildContent is not null)// Child content is rendering!?
+{
+    <SectionContent SectionName=@UseBoxSection>
+        @ChildContent
+    </SectionContent>
+}
+
+@{
+    base.BuildRenderTree(__builder);
+}

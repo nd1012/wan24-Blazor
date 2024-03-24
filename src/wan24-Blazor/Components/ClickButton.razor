@@ -1,0 +1,40 @@
+﻿@inherits Clickable
+
+<SectionContent SectionName=@UseBoxSection>
+    <GrowBox Flex=@Flex>
+        @if(HasIcon && ShowIcon)
+        {
+            <Image 
+                Src=@Icon 
+                SvgXml=@SvgIconXml 
+                SvgColor=@SvgIconColor 
+                Title=@Text 
+                Size=@IconSize
+                Class=@AllIconClass 
+                Style=@AllIconStyle 
+                Attributes=@AllIconAttributes 
+                Grow=@GrowIcon 
+                @attributes=@AllIconParameters
+                />
+        }
+        @if(ShowText && Text is not null)
+        {
+            <BodyText
+                TagName="div" 
+                VAlign=@VerticalAligns.Center 
+                Class=@AllTextClass 
+                Style=@AllTextStyle 
+                Attributes=@AllTextAttributes 
+                Grow 
+                @attributes=@AllTextParameters
+                >
+                @Text
+            </BodyText>
+        }
+        @ChildContent
+    </GrowBox>
+</SectionContent>
+
+@{
+    base.BuildRenderTree(__builder);
+}

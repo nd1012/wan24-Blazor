@@ -1,0 +1,8 @@
+﻿.hr {
+    display: inline-block;
+    align-self: stretch;
+    height: var(--bs-border-width);
+    min-width: 1em;
+    background-color: currentcolor;
+    opacity: 0.25;
+}

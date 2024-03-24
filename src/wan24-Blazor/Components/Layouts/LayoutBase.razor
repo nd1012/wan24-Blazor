@@ -1,0 +1,17 @@
+﻿@using BlazorPro.BlazorSize
+@inherits LayoutComponentBase
+@inject IResizeListener ResizeListener
+
+@if (Debug)
+{
+    <!-- Start layout -->
+}
+<MediaQueryList>
+    <CascadingValue Value="this">
+        @RenderContent()
+    </CascadingValue>
+</MediaQueryList>
+@if (Debug)
+{
+    <!-- End layout -->
+}

@@ -1,0 +1,13 @@
+﻿@inherits FlexLayoutBase
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    public MainLayout() : base()
+    {
+        Sidebar = typeof(NavMenu);
+        ShowSidebarOnSmallLandscape = false;
+    }
+}

@@ -1,0 +1,12 @@
+﻿@inherits Link
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public HoverLink() : base() => Hover = true;
+}

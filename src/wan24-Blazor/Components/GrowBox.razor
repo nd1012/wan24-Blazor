@@ -1,0 +1,18 @@
+﻿@inherits Box
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public GrowBox() : base() => Grow = true;
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="tagName">HTML tag name</param>
+    protected GrowBox(in string tagName) : base(tagName) => Grow = true;
+}

@@ -1,0 +1,239 @@
+﻿@inherits LayoutBase
+
+<SectionContent SectionName=@LAYOUT_SECTION>
+    @if (IsDebug)
+    {
+        <!-- Begin flex layout -->
+        <!-- Begin flex layout top additions -->
+    }
+    @if (DisplayTopHeader)
+    {
+        @if (IsDebug)
+        {
+            <!-- Begin flex layout top header -->
+        }
+        <Box Id="topHeader" TagName=@TopHeaderTag Overflow="OverflowTypes.Hidden" FlexBox>
+            @if (TopHeaderSection is not null)
+            {
+                @if (IsDebug)
+                {
+                    <!-- Begin flex layout top header section -->
+                }
+                <SectionOutlet SectionId=@nameof(TopHeaderSection) />
+                @if (IsDebug)
+                {
+                    <!-- End flex layout top header section -->
+                }
+            }
+            else
+            {
+                <DynamicComponent Type=@TopHeader Parameters=@TopHeaderParameters />
+            }
+        </Box>
+        @if (IsDebug)
+        {
+            <!-- End flex layout top header -->
+        }
+    }
+    @if (IsDebug)
+    {
+        <!-- End flex layout top additions -->
+        <!-- Begin flex layout content encapsulation from top/bottom -->
+    }
+    <GrowBox TagName="section" Overflow="OverflowTypes.Hidden" Flex=@ContentFlex>
+        @if (DisplaySidebar)
+        {
+            @if (IsDebug)
+            {
+                <!-- Begin flex layout sidebar -->
+            }
+            <CascadingValue Value=@ContentFlex.ToOrientation().Flip()>
+                <Box Id="sidebar" TagName=@SidebarTag Overflow="OverflowTypes.Hidden" FlexBox>
+                    @if (SidebarSection is not null)
+                    {
+                        @if (IsDebug)
+                        {
+                            <!-- Begin flex layout sidebar section -->
+                        }
+                        <SectionOutlet SectionId=@nameof(SidebarSection) />
+                        @if (IsDebug)
+                        {
+                            <!-- End flex layout sidebar section -->
+                        }
+                    }
+                    else
+                    {
+                        <DynamicComponent Type=@Sidebar Parameters=@SidebarParameters />
+                    }
+                </Box>
+            </CascadingValue>
+            @if (IsDebug)
+            {
+                <!-- End flex layout sidebar -->
+            }
+        }
+        @if (IsDebug)
+        {
+            <!-- Begin flex content -->
+        }
+        <GrowBox Id="content" TagName="section" Overflow="OverflowTypes.Hidden" FlexBox>
+            @if (DisplayHeader)
+            {
+                @if (IsDebug)
+                {
+                    <!-- Begin flex layout header -->
+                }
+                <Box Id="header" TagName=@HeaderTag Overflow="OverflowTypes.Hidden" FlexBox>
+                    @if(HeaderSection is not null)
+                    {
+                        @if (IsDebug)
+                        {
+                            <!-- Begin flex layout header section -->
+                        }
+                        <SectionOutlet SectionId=@nameof(HeaderSection) />
+                        @if (IsDebug)
+                        {
+                            <!-- End flex layout header section -->
+                        }
+                    }
+                    else
+                    {
+                        <DynamicComponent Type=@Header Parameters=@HeaderParameters />
+                    }
+                </Box>
+                @if (IsDebug)
+                {
+                    <!-- End flex layout header -->
+                }
+            }
+            @if (IsDebug)
+            {
+                <!-- Begin flex content body -->
+            }
+            <GrowBox Id="contentBody" TagName="section" Overflow="OverflowTypes.Hidden" Flex=@ContentBodyFlex>
+                @if (IsDebug)
+                {
+                    <!-- Begin flex layout body -->
+                }
+                <Content Id="body" TagName=@BodyTag FlexBox Grow>
+                    @Body
+                </Content>
+                @if (IsDebug)
+                {
+                    <!-- End flex layout body -->
+                }
+                @if (DisplayContentSidebar)
+                {
+                    @if (IsDebug)
+                    {
+                        <!-- Begin flex layout content sidebar -->
+                    }
+                    <CascadingValue Value=@ContentBodyFlex.ToOrientation().Flip()>
+                        <Box Id="contentSidebar" TagName=@ContentSidebarTag Overflow="OverflowTypes.Scroll" FlexBox>
+                            @if(ContentSidebarSection is not null)
+                            {
+                                @if (IsDebug)
+                                {
+                                    <!-- Begin flex layout content sidebar section -->
+                                }
+                                <SectionOutlet SectionId=@nameof(ContentSidebarSection) />
+                                @if (IsDebug)
+                                {
+                                    <!-- End flex layout content sidebar section -->
+                                }
+                            }
+                            else
+                            {
+                                <DynamicComponent Type=@ContentSidebar Parameters=@ContentSidebarParameters />
+                            }
+                        </Box>
+                    </CascadingValue>
+                    @if (IsDebug)
+                    {
+                        <!-- End flex layout content sidebar -->
+                    }
+                }
+            </GrowBox>
+            @if (IsDebug)
+            {
+                <!-- End flex content body -->
+            }
+            @if (DisplayFooter)
+            {
+                @if (IsDebug)
+                {
+                    <!-- Begin flex layout footer -->
+                }
+                <Box Id="footer" TagName=@FooterTag Overflow="OverflowTypes.Hidden" FlexBox>
+                    @if(FooterSection is not null)
+                    {
+                        @if (IsDebug)
+                        {
+                            <!-- Begin flex layout footer section -->
+                        }
+                        <SectionOutlet SectionId=@nameof(FooterSection) />
+                        @if (IsDebug)
+                        {
+                            <!-- End flex layout footer section -->
+                        }
+                    }
+                    else
+                    {
+                        <DynamicComponent Type=@Footer Parameters=@FooterParameters />
+                    }
+                </Box>
+                @if (IsDebug)
+                {
+                    <!-- End flex layout footer -->
+                }
+            }
+        </GrowBox>
+        @if (IsDebug)
+        {
+            <!-- End flex content -->
+        }
+    </GrowBox>
+    @if (IsDebug)
+    {
+        <!-- End flex layout content encapsulation from top/bottom -->
+        <!-- Begin flex layout bottom additions -->
+    }
+    @if (DisplayBottomFooter)
+    {
+        @if (IsDebug)
+        {
+            <!-- Begin flex layout bottom footer -->
+        }
+        <Box Id="bottomFooter" TagName=@BottomFooterTag Overflow="OverflowTypes.Hidden" FlexBox>
+            @if(BottomFooterSection is not null)
+            {
+                @if (IsDebug)
+                {
+                    <!-- Begin flex layout bottom footer section -->
+                }
+                <SectionOutlet SectionId=@nameof(BottomFooterSection) />
+                @if (IsDebug)
+                {
+                    <!-- End flex layout bottom footer section -->
+                }
+            }
+            else
+            {
+                <DynamicComponent Type=@BottomFooter Parameters=@BottomFooterParameters />
+            }
+        </Box>
+        @if (IsDebug)
+        {
+            <!-- End flex layout bottom footer -->
+        }
+    }
+    @if (IsDebug)
+    {
+        <!-- End flex layout bottom additions -->
+        <!-- End flex layout -->
+    }
+</SectionContent>
+
+@{
+    base.BuildRenderTree(__builder);
+}

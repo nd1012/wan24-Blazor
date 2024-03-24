@@ -1,0 +1,11 @@
+﻿@inherits Box
+
+<SectionContent SectionName=@UseBoxSection>
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</SectionContent>
+
+@{
+    base.BuildRenderTree(__builder);
+}

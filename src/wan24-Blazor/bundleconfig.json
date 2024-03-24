@@ -1,0 +1,12 @@
+[
+  {
+    "outputFileName": "wwwroot/js/minified/blazorGateway.min.js",
+    "inputFiles": [
+      "wwwroot/js/transpiled/blazorGateway.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  }
+]

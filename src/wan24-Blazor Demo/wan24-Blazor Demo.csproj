@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>wan24BlazorDemo</AssemblyName>
+    <RootNamespace>wan24.Blazor.Demo</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.2" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\wan24-Blazor-BootstrapIcons\wan24-Blazor-BootstrapIcons.csproj" />
+    <ProjectReference Include="..\wan24-Blazor-Bootstrap\wan24-Blazor-Bootstrap.csproj" />
+    <ProjectReference Include="..\wan24-Blazor\wan24-Blazor.csproj" />
+  </ItemGroup>
+
+</Project>

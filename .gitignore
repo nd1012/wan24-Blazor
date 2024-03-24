@@ -396,3 +396,18 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Transpiled and minified components
+**/wwwroot/js/transpiled/**/*
+**/wwwroot/js/minified/**/*
+**/wwwroot/css/minified/**/*
+
+# Bootstrap
+bootstrap-icons-1.11.3
+
+# NuGetconfig
+nuget.config
+nuget-publish.bat
+
+# Others
+**/log.txt

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "wan24-Blazor Code Generator CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "code"
+    }
+  }
+}

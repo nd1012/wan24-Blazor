@@ -1,0 +1,11 @@
+﻿@implements IServeChildContent
+
+<SectionContent SectionId="FlexLayoutBase.TopHeaderSection">
+    @ChildContent
+</SectionContent>
+
+@code {
+    /// <inheritdoc/>
+    [Parameter]
+    public RenderFragment? ChildContent{ get; set; }
+}

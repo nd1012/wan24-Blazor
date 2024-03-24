@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>wan24.Blazor</RootNamespace>
+    <AssemblyName>wan24BlazorBootstrap</AssemblyName>
+    <PackageId>wan24-Blazor-Bootstrap</PackageId>
+    <Title>wan24-Blazor-Bootstrap</Title>
+    <Version>5.3.3.0</Version>
+    <Authors>nd1012</Authors>
+    <Company>Andreas Zimmermann, wan24.de</Company>
+    <Product>wan24-Blazor</Product>
+    <Description>Bootstrap 5 JS and CSS for wan24-Blazor</Description>
+    <Copyright>(c) 2024 Andreas Zimmermann, wan24.de</Copyright>
+    <PackageProjectUrl>https://github.com/nd1012/wan24-Blazor</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nd1012/wan24-Blazor</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>blazor;bootstrap</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\css\bootstrap.css" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\css\bootstrap-grid.css" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\css\bootstrap-reboot.css" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\css\bootstrap-utilities.css" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\js\bootstrap.bundle.js" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\**\*.bundle.js" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\**\*.esm.js" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\**\*.*.map" Condition="'$(Configuration)' == 'Release'" />
+    <Content Remove="wwwroot\**\*.rtl.css" Condition="'$(Configuration)' == 'Release'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="nuget.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
