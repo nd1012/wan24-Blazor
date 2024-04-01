@@ -7,13 +7,17 @@
 @code {
     public MainLayout() : base()
     {
+        // Configure the demo theme
         Theme = Bs5Theme.Demo;
+        // Configure the sidebar
         Sidebar = typeof(NavMenu);
         ShowSidebarOnSmallLandscape = false;
+        // Configure the body
         BodyParameters = new()
         {
             {nameof(Content.BackGroundGradient), true}
         };
+        // Handle color mode changes (dark/light mode)
         HandleColorModeChange();
         ColorModeChangesState = true;
     }
@@ -22,6 +26,7 @@
     {
         if (firstRender)
         {
+            // Attach to color mode change events
             BlazorEnv.OnColorModeChanged += HandleColorModeChange;
         }
         base.OnAfterRender(firstRender);
@@ -29,18 +34,21 @@
 
     protected override void Dispose(bool disposing)
     {
+        // Detach from color mode change events
         BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
         base.Dispose(disposing);
     }
 
     protected override Task DisposeCore()
     {
+        // Detach from color mode change events
         BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
         return base.DisposeCore();
     }
 
     private void HandleColorModeChange()
     {
+        // Set the body background color depending on the current color mode
         BodyParameters![nameof(Content.BackGroundColor)] = BlazorEnv.LightMode ? Colors.Light : Colors.Dark;
     }
 }

@@ -261,11 +261,75 @@ Example:
 }
 
 @code {
-	public MainLayout() : base()
-	{
-		SideBar = typeof(NavMenu);
-		// Any additional setup
-	}
+    public MainLayout() : base()
+    {
+        // Configure the demo theme
+        Theme = Bs5Theme.Demo;
+        // Configure the sidebar
+        Sidebar = typeof(NavMenu);
+        ShowSidebarOnSmallLandscape = false;
+        // Configure the body
+        BodyParameters = new()
+        {
+            {nameof(Content.BackGroundGradient), true}
+        };
+        // Handle color mode changes (dark/light mode)
+        HandleColorModeChange();
+        ColorModeChangesState = true;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Attach to color mode change events
+            BlazorEnv.OnColorModeChanged += HandleColorModeChange;
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        // Detach from color mode change events
+        BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
+        base.Dispose(disposing);
+    }
+
+    protected override Task DisposeCore()
+    {
+        // Detach from color mode change events
+        BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
+        return base.DisposeCore();
+    }
+
+    private void HandleColorModeChange()
+    {
+        // Set the body background color depending on the current color mode
+        BodyParameters![nameof(Content.BackGroundColor)] = BlazorEnv.LightMode ? Colors.Light : Colors.Dark;
+    }
+}
+```
+
+#### Modify the `Layout/NavMenu.razor`
+
+Example:
+
+```razor
+@inherits ComponentBase
+
+<Bar Flex=@Orientation.ToFlexBoxType() BackGroundGradient ShowTextHorizontal="false">
+    <BarBranding Href="/" Text="wan24-Blazor Demo" />
+    <BarItem Href="/" Text="Home" IconParameters=@Images.Icon_house.AsImageParameters() />
+    <BarItem Href="/counter" Text="Counter" IconParameters=@Images.Icon_123.AsImageParameters() />
+    <BarItem Href="/weather" Text="Weather" IconParameters=@Images.Icon_cloud.AsImageParameters() />
+</Bar>
+
+@code {
+    /// <summary>
+    /// Orientation
+    /// </summary>
+    [CascadingParameter]
+    public Orientations Orientation{ get; set; }
 }
 ```
 

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.Policy;
+using wan24.Blazor.Parameters;
 using wan24.Core;
 
 namespace wan24.Blazor
@@ -34,15 +35,25 @@ namespace wan24.Blazor
 #define CONTENT
 
         /// <summary>
-        /// Decode the raw SVG XML from an image
+        /// Decode the raw SVG XML from an image data URI
         /// </summary>
-        /// <param name="image">Image</param>
+        /// <param name="image">Image data URI</param>
         /// <returns>Raw SVG XML</returns>
         public static string AsSvgXml(this string image)
         {
             if (!image.StartsWith("data:image/svg+xml;base64, ")) throw new ArgumentException("Not a valid data URI", nameof(image));
             return image.AsSpan(27).DecodeBase64().ToUtf8String();
         }
+
+        /// <summary>
+        /// Get SVG image parameters from an image data URI
+        /// </summary>
+        /// <param name="image">Image data URI</param>
+        /// <returns>Image parameters</returns>
+        public static ImageParameters AsImageParameters(this string image) => new()
+        {
+            SvgXml = AsSvgXml(image)
+        };
 
         /// <summary>
         /// Get an image by its name

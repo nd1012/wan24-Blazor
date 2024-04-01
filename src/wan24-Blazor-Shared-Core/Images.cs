@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Security.Policy;
+using wan24.Blazor.Parameters;
 using wan24.Core;
 
 namespace wan24.Blazor
@@ -10282,15 +10283,25 @@ namespace wan24.Blazor
 		public static string Icon_zoom_out { get; } = "data:image/svg+xml;base64, PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9ImN1cnJlbnRDb2xvciIgY2xhc3M9ImJpIGJpLXpvb20tb3V0IiB2aWV3Qm94PSIwIDAgMTYgMTYiPgogIDxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgZD0iTTYuNSAxMmE1LjUgNS41IDAgMSAwIDAtMTEgNS41IDUuNSAwIDAgMCAwIDExTTEzIDYuNWE2LjUgNi41IDAgMSAxLTEzIDAgNi41IDYuNSAwIDAgMSAxMyAwIi8+CiAgPHBhdGggZD0iTTEwLjM0NCAxMS43NDJxLjA0NC4wNi4wOTguMTE1bDMuODUgMy44NWExIDEgMCAwIDAgMS40MTUtMS40MTRsLTMuODUtMy44NWExIDEgMCAwIDAtLjExNS0uMSA2LjUgNi41IDAgMCAxLTEuMzk4IDEuNHoiLz4KICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0zIDYuNWEuNS41IDAgMCAxIC41LS41aDZhLjUuNSAwIDAgMSAwIDFoLTZhLjUuNSAwIDAgMS0uNS0uNSIvPgo8L3N2Zz4=";
 
         /// <summary>
-        /// Decode the raw SVG XML from an image
+        /// Decode the raw SVG XML from an image data URI
         /// </summary>
-        /// <param name="image">Image</param>
+        /// <param name="image">Image data URI</param>
         /// <returns>Raw SVG XML</returns>
         public static string AsSvgXml(this string image)
         {
             if (!image.StartsWith("data:image/svg+xml;base64, ")) throw new ArgumentException("Not a valid data URI", nameof(image));
             return image.AsSpan(27).DecodeBase64().ToUtf8String();
         }
+
+        /// <summary>
+        /// Get SVG image parameters from an image data URI
+        /// </summary>
+        /// <param name="image">Image data URI</param>
+        /// <returns>Image parameters</returns>
+        public static ImageParameters AsImageParameters(this string image) => new()
+        {
+            SvgXml = AsSvgXml(image)
+        };
 
         /// <summary>
         /// Get an image by its name
