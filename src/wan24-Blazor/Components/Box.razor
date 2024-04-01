@@ -1,3 +1,7 @@
 ﻿@inherits ParentComponentBase
+@implements IBoxParametersExt
 
-@RenderContent()
+@if (IsVisible)
+{
+    @RenderContent()
+}

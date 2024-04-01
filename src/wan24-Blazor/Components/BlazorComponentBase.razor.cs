@@ -1,6 +1,8 @@
 ﻿using BlazorComponentUtilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using System.Diagnostics;
+using wan24.Blazor.Parameters;
 using wan24.Core;
 
 // Components: https://learn.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-8.0
@@ -14,33 +16,47 @@ namespace wan24.Blazor.Components
     /// <remarks>
     /// Constructor
     /// </remarks>
-    public abstract partial class BlazorComponentBase() : ComponentBase()
+    public abstract partial class BlazorComponentBase() : ComponentBase(), IBlazorComponent
     {
-        /// <summary>
-        /// Factory CSS class (override to provide default class names)
-        /// </summary>
+        /// <inheritdoc/>
+        public virtual Dictionary<string, object> AllParameters => CurrentParameters.AllParameters;
+
+        /// <inheritdoc/>
+        public abstract IParameters DefaultParameters { get; }
+
+        /// <inheritdoc/>
+        public abstract IParameters CurrentParameters { get; }
+
+        /// <inheritdoc/>
+        public abstract IEnumerable<string> ObjectProperties { get; }
+
+        /// <inheritdoc/>
+        public abstract IEnumerable<string> DesignProperties { get; }
+
+        /// <inheritdoc/>
+        public abstract IEnumerable<string> AccessabilityProperties { get; }
+
+        /// <inheritdoc/>
         public virtual string? FactoryClass => null;
 
-        /// <summary>
-        /// Horizontal align CSS
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string HAlignCss => HAlign.HasValue
             ? HAlign.Value switch
             {
-                HorizontalAligns.Right => "right",
+                HorizontalAligns.Right => "end",
                 HorizontalAligns.Center => "center",
                 _ => "start"
             }
             : "start";
 
-        /// <summary>
-        /// CSS class attribute raw HTML
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string? ClassAttribute
         {
             get
             {
                 CssBuilder builder = new();
+                bool visible = IsVisible,
+                    enabled = IsEnabled;
 
                 // Factory CSS classes
                 if (FactoryClass is string factoryClass) builder.AddClass(factoryClass);
@@ -50,7 +66,7 @@ namespace wan24.Blazor.Components
                 if (Grow) builder.AddClass("flex-grow-1");
                 if (FlexBox)
                 {
-                    builder.AddClass(InlineFlex ? "d-inline-flex" : "d-flex");
+                    if (visible) builder.AddClass(InlineFlex ? "d-inline-flex" : "d-flex");
                     builder.AddClass(Flex switch
                     {
                         FlexBoxTypes.Row => "flex-row",
@@ -105,19 +121,16 @@ namespace wan24.Blazor.Components
                 });
 
                 // Background
-                if (BackGroundColor is not null)
+                if (BackGroundColor is not null) builder.AddClass($"bg-{BackGroundColor}{(BackGroundSubtle ? "-subtle" : string.Empty)}");
+                if (BackGroundOpacity != Opacities.Op100) builder.AddClass(BackGroundOpacity switch
                 {
-                    builder.AddClass($"bg-{BackGroundColor}{(BackGroundSubtle ? "-subtle" : string.Empty)}");
-                    if (BackGroundGradient) builder.AddClass("bg-gradient");
-                    if (BackGroundOpacity != Opacities.Op100) builder.AddClass(BackGroundOpacity switch
-                    {
-                        Opacities.Op75 => "bg-opacity-75",
-                        Opacities.Op50 => "bg-opacity-50",
-                        Opacities.Op25 => "bg-opacity-25",
-                        Opacities.Op10 => "bg-opacity-10",
-                        _ => throw new InvalidProgramException(BackGroundOpacity.ToString())
-                    });
-                }
+                    Opacities.Op75 => "bg-opacity-75",
+                    Opacities.Op50 => "bg-opacity-50",
+                    Opacities.Op25 => "bg-opacity-25",
+                    Opacities.Op10 => "bg-opacity-10",
+                    _ => throw new InvalidProgramException(BackGroundOpacity.ToString())
+                });
+                if (BackGroundGradient) builder.AddClass("bg-gradient");
 
                 // Text
                 if (TextColor is not null) builder.AddClass($"text-{TextColor}{(TextEmphasis ? "-emphasis" : string.Empty)}");
@@ -140,6 +153,25 @@ namespace wan24.Blazor.Components
                     TextSelections.Auto => "user-select-auto",
                     _ => throw new InvalidProgramException(Selection.Value.ToString())
                 });
+                if (FontStyle.HasValue)
+                {
+                    if ((FontStyle.Value & FontStyles.Bold) == FontStyles.Bold) builder.AddClass("fw-bold");
+                    if ((FontStyle.Value & FontStyles.Italic) == FontStyles.Italic) builder.AddClass("fst-italic");
+                    if ((FontStyle.Value & FontStyles.Underline) == FontStyles.Underline) builder.AddClass("text-decoration-underline");
+                    if ((FontStyle.Value & FontStyles.Stroke) == FontStyles.Stroke) builder.AddClass("text-decoration-line-through");
+                    if ((FontStyle.Value & FontStyles.LowerCase) == FontStyles.LowerCase) builder.AddClass("text-lowercase");
+                    if ((FontStyle.Value & FontStyles.UpperCase) == FontStyles.UpperCase) builder.AddClass("text-uppercase");
+                    if ((FontStyle.Value & FontStyles.Capitalize) == FontStyles.Capitalize) builder.AddClass("text-capitalize");
+                    if ((FontStyle.Value & FontStyles.Bolder) == FontStyles.Bolder) builder.AddClass("fw-bolder");
+                    if ((FontStyle.Value & FontStyles.SemiBold) == FontStyles.SemiBold) builder.AddClass("fw-semibold");
+                    if ((FontStyle.Value & FontStyles.MediumBold) == FontStyles.MediumBold) builder.AddClass("fw-medium");
+                    if ((FontStyle.Value & FontStyles.NormalWeight) == FontStyles.NormalWeight) builder.AddClass("fw-normal");
+                    if ((FontStyle.Value & FontStyles.Light) == FontStyles.Light) builder.AddClass("fw-light");
+                    if ((FontStyle.Value & FontStyles.Lighter) == FontStyles.Lighter) builder.AddClass("fw-lighter");
+                    if ((FontStyle.Value & FontStyles.Monospace) == FontStyles.Monospace) builder.AddClass("font-monospace");
+                    if ((FontStyle.Value & FontStyles.ResetColor) == FontStyles.ResetColor) builder.AddClass("text-reset");
+                    if ((FontStyle.Value & FontStyles.NoDecoration) == FontStyles.NoDecoration) builder.AddClass("text-decoration-none");
+                }
 
                 // Borders
                 switch (Border)
@@ -166,31 +198,34 @@ namespace wan24.Blazor.Components
                     _ => throw new InvalidProgramException(BorderOpacity.ToString())
                 });
 
+                // Disabled
+                if (!enabled) builder.AddClass("disabled");
+
+                // Hidden
+                if (!visible) builder.AddClass("d-none");
+
+                // Active
+                if (IsActive && enabled && visible) builder.AddClass("active");
+
                 // User CSS classes
                 if (Class is not null) builder.AddClass(Class);
                 if (Attributes is Dictionary<string, object> attributes) builder.AddClassFromAttributes(attributes);
 
-                return builder.NullIfEmpty();
+                return builder.FinalClasses();
             }
         }
 
-        /// <summary>
-        /// CSS class names
-        /// </summary>
+        /// <inheritdoc/>
         public virtual IEnumerable<string> ClassNames
             => (Class ?? string.Empty).Split(' ')
                 .Select(n => n.Trim()).Concat((FactoryClass ?? string.Empty).Split(' ').Select(n => n.Trim()))
                 .Where(n => !string.IsNullOrWhiteSpace(n))
                 .Distinct();
 
-        /// <summary>
-        /// Factory CSS style (override to provide default styles)
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string? FactoryStyle => null;
 
-        /// <summary>
-        /// CSS style attribute raw HTML
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string? StyleAttribute
         {
             get
@@ -210,24 +245,22 @@ namespace wan24.Blazor.Components
                 if (ZIndex.HasValue) builder.AddStyle($"z-index: {ZIndex};");
                 if (Style is not null) builder.AddStyle(Style);
                 if (Attributes is Dictionary<string, object> attributes) builder.AddStyleFromAttributes(attributes);
-                return builder.NullIfEmpty();
+                return builder.FinalStyle();
             }
         }
 
-        /// <summary>
-        /// Additional factory attributes (override to provide default attributes)
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Dictionary<string, object>? FactoryAttributes => null;
 
-        /// <summary>
-        /// All additional attributes
-        /// </summary>
+        /// <inheritdoc/>
         public Dictionary<string, object> AdditionalAttributes
         {
             get
             {
                 Dictionary<string, object>? factoryAttributes = FactoryAttributes,
                     attributes = Attributes;
+                bool visible = IsVisible,
+                    enabled = IsEnabled;
                 int capacity = (attributes?.Count ?? 0) + (factoryAttributes?.Count ?? 0);
                 if (Id is not null) capacity++;
                 if (Title is not null) capacity++;
@@ -235,27 +268,54 @@ namespace wan24.Blazor.Components
                     style = StyleAttribute;
                 if (classNames is not null) capacity++;
                 if (style is not null) capacity++;
-                if (Disabled) capacity++;
+                if (!enabled) capacity++;
+                if (!visible) capacity++;
+                if (ForcedColorMode.HasValue) capacity++;
                 Dictionary<string, object> res = new(capacity);
                 if (factoryAttributes is not null) res.Merge(factoryAttributes);
                 if (Id is not null) res["id"] = Id;
                 if (Title is not null) res["title"] = Title;
                 if (classNames is not null) res["class"] = classNames;
                 if (style is not null) res["style"] = style;
-                if (Disabled)
+                if (!enabled)
                 {
                     res["disabled"] = "disabled";
                     res["aria-disabled"] = "true";
                 }
+                if (!visible)
+                {
+                    res["hidden"] = "hidden";
+                    res["aria-hidden"] = "true";
+                }
+                if (IsActive && enabled && visible) res["aria-current"] = "true";
+                if (ForcedColorMode.HasValue) res["data-bs-theme"] = (ForcedColorMode.Value & BsThemeMode.Dark) == BsThemeMode.Dark ? "dark" : "light";
                 if (attributes is not null) res.Merge(attributes);
                 return res;
             }
         }
+
+        /// <inheritdoc/>
+        public virtual void ApplyToExcluding(in IParameters other, params string[] excludeProperties)
+            => CurrentParameters.ApplyToExcluding(other, excludeProperties);
+
+        /// <inheritdoc/>
+        public virtual void ApplyToIncluding(in IParameters other, params string[] includeProperties)
+            => CurrentParameters.ApplyToIncluding(other, includeProperties);
+
+        /// <inheritdoc/>
+        public virtual void Update() => StateHasChanged();
 
         /// <summary>
         /// Handle a click
         /// </summary>
         /// <param name="e">Arguments</param>
         protected virtual void OnClick(MouseEventArgs e) { }
+
+        /// <inheritdoc/>
+        protected override void OnParametersSet()
+        {
+            ApplyParameters?.ApplyToExcluding(this);
+            base.OnParametersSet();
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using static wan24.Blazor.BlazorEnv;
+﻿using static wan24.Blazor.BlazorEnv;
 
 namespace wan24.Blazor.Components.Layouts
 {
@@ -11,19 +10,13 @@ namespace wan24.Blazor.Components.Layouts
         /// </summary>
         public static object? SidebarSection { get; protected set; }
 
-        /// <summary>
-        /// Sidebar component type (must be a <see cref="ComponentBase"/> with a parameterless constructor)
-        /// </summary>
+        /// <inheritdoc/>
         public Type? Sidebar { get; protected set; }
 
-        /// <summary>
-        /// Sidebar parameters
-        /// </summary>
+        /// <inheritdoc/>
         public Dictionary<string, object>? SidebarParameters { get; protected set; }
 
-        /// <summary>
-        /// Display the sidebar?
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool DisplaySidebar => !((Sidebar is null && SidebarSection is null) ||
             (IsLargeScreen &&
                 (
@@ -38,29 +31,19 @@ namespace wan24.Blazor.Components.Layouts
                 )
             ));
 
-        /// <summary>
-        /// Sidebar HTML tag name
-        /// </summary>
+        /// <inheritdoc/>
         public string SidebarTag { get; protected set; } = "aside";
 
-        /// <summary>
-        /// Show the sidebar on a landscape screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowSidebarOnLandscape { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the sidebar on a small landscape screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowSidebarOnSmallLandscape { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the sidebar on a portrait screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowSidebarOnPortrait { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the sidebar on a portrait screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowSidebarOnSmallPortrait { get; protected set; } = true;
     }
 }

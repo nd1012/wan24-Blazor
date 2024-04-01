@@ -1,21 +1,6 @@
 ﻿@inherits Box
+@implements IDividerParametersExt
 
 @{
     base.BuildRenderTree(__builder);
-}
-
-@code {
-    /// <summary>
-    /// Divider
-    /// </summary>
-    public Divider() : base() { }
-
-    /// <summary>
-    /// Orientation
-    /// </summary>
-    [Parameter]
-    public Orientations Orientation { get; set; } = Orientations.Horizontal;
-
-    /// <inheritdoc/>
-    public override string? FactoryClass => $"{base.FactoryClass} {(Orientation == Orientations.Horizontal ? "hr" : "vr")}";
 }

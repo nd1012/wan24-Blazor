@@ -21,18 +21,25 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Configurations>Debug;Release;Trunk</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="nuget.config" />
     <Content Remove="wwwroot\css\bootstrap.css" Condition="'$(Configuration)' == 'Release'" />
     <Content Remove="wwwroot\css\bootstrap-grid.css" Condition="'$(Configuration)' == 'Release'" />
     <Content Remove="wwwroot\css\bootstrap-reboot.css" Condition="'$(Configuration)' == 'Release'" />
     <Content Remove="wwwroot\css\bootstrap-utilities.css" Condition="'$(Configuration)' == 'Release'" />
     <Content Remove="wwwroot\js\bootstrap.bundle.js" Condition="'$(Configuration)' == 'Release'" />
     <Content Remove="wwwroot\**\*.bundle.js" Condition="'$(Configuration)' == 'Release'" />
-    <Content Remove="wwwroot\**\*.esm.js" Condition="'$(Configuration)' == 'Release'" />
     <Content Remove="wwwroot\**\*.*.map" Condition="'$(Configuration)' == 'Release'" />
     <Content Remove="wwwroot\**\*.rtl.css" Condition="'$(Configuration)' == 'Release'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="nuget.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -41,12 +48,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="nuget.config">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

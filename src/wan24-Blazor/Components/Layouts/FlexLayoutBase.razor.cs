@@ -6,21 +6,18 @@ namespace wan24.Blazor.Components.Layouts
     /// Constructor
     /// </summary>
     /// <param name="tagName">HTML tag name</param>
-    public abstract partial class FlexLayoutBase(in string? tagName = null) : LayoutBase(tagName)
+    public abstract partial class FlexLayoutBase(in string? tagName = null) : LayoutBase(tagName), IFlexLayout
     {
-        /// <summary>
-        /// Stretch the content sidebar over header and footer?
-        /// </summary>
-        public bool StretchContentSidebar { get; protected set; }//TODO Stretch content sidebar
+        /// <inheritdoc/>
+        public bool StretchContentSidebar { get; protected set; }
 
-        /// <summary>
-        /// Body HTML tag name
-        /// </summary>
+        /// <inheritdoc/>
         public string BodyTag { get; protected set; } = "main";
 
-        /// <summary>
-        /// Content flex box type (defines the sidebar and body apperance in landscape/portrait view on a small/large screen)
-        /// </summary>
+        /// <inheritdoc/>
+        public Dictionary<string, object>? BodyParameters { get; protected set; }
+
+        /// <inheritdoc/>
         public virtual FlexBoxTypes ContentFlex => IsLargeScreen
             ? IsLandscape
                 ? LandscapeContentFlex
@@ -29,29 +26,22 @@ namespace wan24.Blazor.Components.Layouts
                 ? SmallLandscapeContentFlex
                 : SmallPortraitContentFlex;
 
-        /// <summary>
-        /// Content flex box type in landscape view
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes LandscapeContentFlex { get; protected set; } = FlexBoxTypes.Row;
 
-        /// <summary>
-        /// Content flex box type in portrait view
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes PortraitContentFlex { get; protected set; } = FlexBoxTypes.ColumnReverse;
 
-        /// <summary>
-        /// Content flex box type in landscape view on a small screen
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes SmallLandscapeContentFlex { get; protected set; } = FlexBoxTypes.Row;
 
-        /// <summary>
-        /// Content flex box type in portrait view on a small screen
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes SmallPortraitContentFlex { get; protected set; } = FlexBoxTypes.ColumnReverse;
 
-        /// <summary>
-        /// Content body flex box type (defines the body and content sidebar apperance in landscape/portrait view on a small/large screen)
-        /// </summary>
+        /// <inheritdoc/>
+        public virtual FlexBoxTypes BodyFlex => StretchContentSidebar ? FlexBoxTypes.Row : FlexBoxTypes.Column;
+
+        /// <inheritdoc/>
         public virtual FlexBoxTypes ContentBodyFlex => IsLargeScreen
             ? IsLandscape
                 ? LandscapeContentBodyFlex
@@ -60,24 +50,16 @@ namespace wan24.Blazor.Components.Layouts
                 ? SmallLandscapeContentBodyFlex
                 : SmallPortraitContentBodyFlex;
 
-        /// <summary>
-        /// Content body flex box type in landscape view
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes LandscapeContentBodyFlex { get; protected set; } = FlexBoxTypes.Column;
 
-        /// <summary>
-        /// Content body flex box type in portrait view
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes PortraitContentBodyFlex { get; protected set; } = FlexBoxTypes.Row;
 
-        /// <summary>
-        /// Content body flex box type in landscape view on a small screen
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes SmallLandscapeContentBodyFlex { get; protected set; } = FlexBoxTypes.Column;
 
-        /// <summary>
-        /// Content body flex box type in portrait view on a small screen
-        /// </summary>
+        /// <inheritdoc/>
         public FlexBoxTypes SmallPortraitContentBodyFlex { get; protected set; } = FlexBoxTypes.Row;
     }
 }

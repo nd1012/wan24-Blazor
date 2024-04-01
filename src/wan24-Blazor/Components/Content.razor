@@ -1,21 +1,6 @@
 ﻿@inherits ColumnFlexBox
+@implements IContentParametersExt
 
 @{
     base.BuildRenderTree(__builder);
-}
-
-@code {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public Content() : base() { }
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="tagName">HTML tag name</param>
-    protected Content(in string tagName) : base(tagName) { }
-
-    /// <inheritdoc/>
-    public override string FactoryClass => "p-3";
 }

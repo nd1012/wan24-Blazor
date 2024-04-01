@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using wan24.Blazor.Components;
+using wan24.Blazor.Components.Complex;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor
 {
@@ -16,9 +20,29 @@ namespace wan24.Blazor
         /// </summary>
         IEnumerable<IMenuItem> Items { get; }
         /// <summary>
-        /// Icon size CSS
+        /// Navigation manager
         /// </summary>
-        string? IconSize { get; }
+        NavigationManager Navigation { get; }
+        /// <summary>
+        /// Icon parameters
+        /// </summary>
+        IImageParameters? IconParameters { get; }
+        /// <summary>
+        /// Active parameters
+        /// </summary>
+        IImageParameters? ActiveIconParameters { get; }
+        /// <summary>
+        /// Text parameters
+        /// </summary>
+        IBodyTextParameters? TextParameters { get; }
+        /// <summary>
+        /// Component parameters
+        /// </summary>
+        IParameters? ComponentParameters { get; set; }
+        /// <summary>
+        /// Default <see cref="BarItem"/> component type (overrides the default <see cref="MenuItem"/>)
+        /// </summary>
+        Type? ComponentType { get; }
         /// <summary>
         /// Show item text?
         /// </summary>
@@ -48,15 +72,29 @@ namespace wan24.Blazor
         /// </summary>
         bool ShowTextOnSmallPortrait { get; }
         /// <summary>
+        /// Active menu item <see cref="IMenuItem.Href"/> match logic to apply
+        /// </summary>
+        NavLinkMatch ActiveMatch { get; }
+        /// <summary>
+        /// Get/set the active menu item during rendering
+        /// </summary>
+        IMenuItem? ActiveItem { get; set; }
+        /// <summary>
+        /// Show the active menu item?
+        /// </summary>
+        bool ShowActive { get; }
+        /// <summary>
+        /// Show all menu items from the active menu item to its root as active?
+        /// </summary>
+        bool ShowActivePath { get; }
+        /// <summary>
         /// Add a menu item (only top items!)
         /// </summary>
         /// <param name="item">Top menu item</param>
         void AddMenuItem(IMenuItem item);
         /// <summary>
-        /// Find a menu item
+        /// Update the menu
         /// </summary>
-        /// <param name="id">ID</param>
-        /// <returns>Found menu item</returns>
-        IMenuItem? FindMenuItem(string id);
+        void Update();
     }
 }

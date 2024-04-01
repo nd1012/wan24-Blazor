@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using static wan24.Blazor.BlazorEnv;
+﻿using static wan24.Blazor.BlazorEnv;
 
 namespace wan24.Blazor.Components.Layouts
 {
@@ -11,19 +10,13 @@ namespace wan24.Blazor.Components.Layouts
         /// </summary>
         public static object? HeaderSection { get; set; }
 
-        /// <summary>
-        /// Header component type (must be a <see cref="ComponentBase"/> with a parameterless constructor)
-        /// </summary>
+        /// <inheritdoc/>
         public Type? Header { get; protected set; }
 
-        /// <summary>
-        /// Header parameters
-        /// </summary>
+        /// <inheritdoc/>
         public Dictionary<string, object>? HeaderParameters { get; protected set; }
 
-        /// <summary>
-        /// Display the header?
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool DisplayHeader => !((Header is null && HeaderSection is null) ||
             (IsLargeScreen &&
                 (
@@ -38,29 +31,19 @@ namespace wan24.Blazor.Components.Layouts
                 )
             ));
 
-        /// <summary>
-        /// Header HTML tag name
-        /// </summary>
+        /// <inheritdoc/>
         public string HeaderTag { get; protected set; } = "header";
 
-        /// <summary>
-        /// Show the header on a landscape screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowHeaderOnLandscape { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the header on a small landscape screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowHeaderOnSmallLandscape { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the header on a portrait screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowHeaderOnPortrait { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the header on a portrait screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowHeaderOnSmallPortrait { get; protected set; } = true;
     }
 }

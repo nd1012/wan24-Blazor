@@ -8,6 +8,29 @@ namespace wan24.Blazor
     public partial record class DomElement
     {
         /// <summary>
+        /// Create the (non-comment/CDATA/text) element to the DOM (<see cref="ParentID"/> needs to be set; <see cref="ID"/>, <see cref="Attributes"/> and 
+        /// <see cref="Text"/> may be set)
+        /// </summary>
+        /// <param name="tag">HTML tag name</param>
+        /// <param name="html">Inner HTML (would overwrite <see cref="Text"/>)</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>New DOM element ID or <see langword="null"/>, if failed (see JS console messages)</returns>
+        public virtual ValueTask<string?> CreateAsync(string tag, string? html = null, CancellationToken cancellationToken = default)
+        {
+            EnsureUndisposed();
+            if (Type != DomElementTypes.Node) throw new InvalidOperationException("Not supported for comment/CDATA/text elements");
+            return Gateway.CreateElementAsync(
+                ParentID ?? throw new InvalidOperationException("Missing Parent ID"),
+                tag,
+                ID,
+                Attributes is null ? null : new(Attributes),
+                Text,
+                html,
+                cancellationToken
+                );
+        }
+
+        /// <summary>
         /// Remove from the DOM (all event handlers will be removed also)
         /// </summary>
         /// <param name="cancellationToken">Cancellation token</param>

@@ -19,8 +19,7 @@ namespace wan24.Blazor.Components.Layouts
     /// </remarks>
     /// <param name="tagName">HTML tag name</param>
     /// <param name="asyncDisposing">If <see cref="DisposeCore"/> was implemented</param>
-    public abstract partial class LayoutBase(in string? tagName = null, in bool asyncDisposing = false)
-        : LayoutComponentBase(), IDisposable, IAsyncDisposable
+    public abstract partial class LayoutBase(in string? tagName = null, in bool asyncDisposing = false) : LayoutComponentBase(), ILayout
     {
         /// <summary>
         /// Layout section name
@@ -57,65 +56,47 @@ namespace wan24.Blazor.Components.Layouts
             Dispose(disposing: false);
         }
 
-        /// <summary>
-        /// If disposing
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsDisposing => _IsDisposing;
 
-        /// <summary>
-        /// If disposed
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsDisposed => _IsDisposed;
 
-        /// <summary>
-        /// If a changed display changes the state (forces re-rendering)
-        /// </summary>
+        /// <inheritdoc/>
         public bool DisplayChangesState { get; protected set; } = true;
 
-        /// <summary>
-        /// HTML tag name
-        /// </summary>
+        /// <inheritdoc/>
+        public bool ColorModeChangesState { get; protected set; } = false;
+
+        /// <inheritdoc/>
         public virtual string TagName { get; protected set; } = tagName ?? "div";
 
-        /// <summary>
-        /// ID
-        /// </summary>
+        /// <inheritdoc/>
         public string Id { get; protected set; } = "main";
 
-        /// <summary>
-        /// CSS class
-        /// </summary>
+        /// <inheritdoc/>
         public string? Class { get; protected set; }
 
-        /// <summary>
-        /// Factory CSS class (override to provide default class names)
-        /// </summary>
-        public virtual string? FactoryClass
-            => $"{IfLandscape("landscape", "portrait")}{IfSmallScreen("small-screen", "large-screen")}{(IsDebug ? "debug" : string.Empty)} vh-100 vw-100";
+        /// <inheritdoc/>
+        public IBsTheme? Theme { get; protected set; }
 
-        /// <summary>
-        /// Flex box type
-        /// </summary>
+        /// <inheritdoc/>
+        public virtual string? FactoryClass
+            => $"{IfLandscape("landscape", "portrait")} {IfSmallScreen("small-screen", "large-screen")} {(IsDebug ? "debug" : string.Empty)} vh-100 vw-100";
+
+        /// <inheritdoc/>
         public virtual FlexBoxTypes Flex { get; protected set; } = FlexBoxTypes.Column;
 
-        /// <summary>
-        /// Overflow type
-        /// </summary>
+        /// <inheritdoc/>
         public virtual OverflowTypes Overflow { get; protected set; } = OverflowTypes.Hidden;
 
-        /// <summary>
-        /// X-overflow type
-        /// </summary>
+        /// <inheritdoc/>
         public virtual OverflowTypes OverflowX { get; protected set; }
 
-        /// <summary>
-        /// Y-overflow type
-        /// </summary>
+        /// <inheritdoc/>
         public virtual OverflowTypes OverflowY { get; protected set; }
 
-        /// <summary>
-        /// CSS class attribute raw HTML
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string? ClassAttribute
         {
             get
@@ -158,56 +139,42 @@ namespace wan24.Blazor.Components.Layouts
                     OverflowTypes.Scroll => "overflow-y-scroll",
                     _ => throw new InvalidProgramException(OverflowY.ToString())
                 });
-                return builder.NullIfEmpty();
+                return builder.FinalClasses();
             }
         }
 
-        /// <summary>
-        /// CSS class names
-        /// </summary>
+        /// <inheritdoc/>
         public virtual IEnumerable<string> ClassNames
             => (Class ?? string.Empty).Split(' ')
                 .Select(n => n.Trim()).Concat((FactoryClass ?? string.Empty).Split(' ').Select(n => n.Trim()))
                 .Where(n => !string.IsNullOrWhiteSpace(n))
                 .Distinct();
 
-        /// <summary>
-        /// CSS style
-        /// </summary>
+        /// <inheritdoc/>
         public string? Style { get; protected set; }
 
-        /// <summary>
-        /// Factory CSS style (override to provide default styles)
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string? FactoryStyle => null;
 
-        /// <summary>
-        /// CSS style attribute raw HTML
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string? StyleAttribute
         {
             get
             {
-                CssBuilder builder = new();
-                if (FactoryStyle is not null) builder.AddValue(FactoryStyle);
-                if (Style is not null) builder.AddValue(Style);
-                return builder.NullIfEmpty();
+                StyleBuilder builder = new();
+                if (FactoryStyle is not null) builder.AddStyle(FactoryStyle);
+                if (Style is not null) builder.AddStyle(Style);
+                return builder.FinalStyle();
             }
         }
 
-        /// <summary>
-        /// Additional attributes
-        /// </summary>
+        /// <inheritdoc/>
         public Dictionary<string, object>? Attributes { get; protected set; }
 
-        /// <summary>
-        /// Additional factory attributes (override to provide default attributes)
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Dictionary<string, object>? FactoryAttributes => null;
 
-        /// <summary>
-        /// All additional attributes
-        /// </summary>
+        /// <inheritdoc/>
         public Dictionary<string, object> AdditionalAttributes
         {
             get
@@ -254,15 +221,43 @@ namespace wan24.Blazor.Components.Layouts
             WindowWidth = size.Width;
             WindowHeight = size.Height;
             if (Trace) WriteTrace($"Size change {size.Width}x{size.Height} was landscape {wasLandscape}, is landscape {IsLandscape}, was small screen {wasSmallScreen}, is small screen {IsSmallScreen}");
-            if (DisplayChangesState && (wasLandscape != IsLandscape || wasSmallScreen != IsSmallScreen))
+            bool changed = wasLandscape != IsLandscape || wasSmallScreen != IsSmallScreen;
+            if (changed)
+            {
+                RaiseOnScreenOrientationChanged();
+                if (DisplayChangesState)
+                    try
+                    {
+                        DisplayChanged = true;
+                        StateHasChanged();
+                    }
+                    finally
+                    {
+                        DisplayChanged = false;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Handle a color mode change (update the razor environment and re-render, if the color mode changed)
+        /// </summary>
+        /// <param name="matches">If matches</param>
+        protected virtual void HandleColorModeChange(bool matches)
+        {
+            bool wasLightMode = LightMode;
+            if ((BsTheme.Current.Mode & BsThemeMode.UserDefined) != BsThemeMode.UserDefined)
+                BsTheme.Current.Mode = LightMode ? BsThemeMode.Light : BsThemeMode.Dark;
+            LightMode = !matches;
+            if (Trace) WriteTrace($"Color mode change was light mode {wasLightMode}, is light mode {LightMode}");
+            if (DisplayChangesState && wasLightMode != LightMode)
                 try
                 {
-                    DisplayChanged = true;
+                    ColorModeChanged = true;
                     StateHasChanged();
                 }
                 finally
                 {
-                    DisplayChanged = false;
+                    ColorModeChanged = false;
                 }
         }
 
@@ -276,13 +271,25 @@ namespace wan24.Blazor.Components.Layouts
             base.OnAfterRender(firstRender);
         }
 
+        /// <inheritdoc/>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                if (BlazorGateway.Instance is null) await BlazorGateway.CreateAsync(JsRuntime).DynamicContext();
+            }
+            await base.OnAfterRenderAsync(firstRender).DynamicContext();
+        }
+
         /// <summary>
         /// Dispose
         /// </summary>
         /// <param name="disposing">If disposing</param>
         protected virtual void Dispose(bool disposing) { }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Dispose
+        /// </summary>
         protected virtual Task DisposeCore() => Task.CompletedTask;
 
         /// <inheritdoc/>

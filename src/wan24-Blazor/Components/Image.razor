@@ -1,24 +1,24 @@
 ﻿@inherits Box
+@implements IImageParametersExt
 
-@if (UseImageSection is not null)// Inheriting component will render
+@if (IsVisible)
 {
-    <SectionContent SectionName=@UseBoxSection>
-        <SectionOutlet SectionName=@UseImageSection />
-    </SectionContent>
-}
-else if (RenderSvg)// SVG is being rendered
-{
-    <SectionContent SectionName=@UseBoxSection>
-        @((MarkupString)SvgXml!)
-    </SectionContent>
-}
-else if(ChildContent is not null)// Child content is rendering!?
-{
-    <SectionContent SectionName=@UseBoxSection>
-        @ChildContent
-    </SectionContent>
-}
-
-@{
+    @if (UseBoxSection is not null)
+    {
+        <SectionContent SectionName=@UseBoxSection>
+            @if (UseImageSection is not null)// Inheriting component will render
+            {
+                <SectionOutlet SectionName=@UseImageSection />
+            }
+            else if (RenderSvg)// SVG is being rendered
+            {
+                @((MarkupString)SvgXml!)
+            }
+            else if (ChildContent is not null)// Child content is rendering!?
+            {
+                @ChildContent
+            }
+        </SectionContent>
+    }
     base.BuildRenderTree(__builder);
 }

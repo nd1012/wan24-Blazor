@@ -1,21 +1,6 @@
 ﻿@inherits BodyText
+@implements ILeadTextParametersExt
 
 @{
     base.BuildRenderTree(__builder);
-}
-
-@code {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public LeadText() : base() { }
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="tagName"></param>
-    protected LeadText(in string tagName) : base(tagName) { }
-
-    /// <inheritdoc/>
-    public override string? FactoryClass => $"{base.FactoryClass} lead";
 }

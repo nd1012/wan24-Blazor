@@ -1,0 +1,11 @@
+﻿@inherits ParentComponentBase
+@implements IBarItemParametersExt
+@implements IMenuItemComponentHost
+@implements IMenuParentItem
+
+@if(IsVisible)
+{
+    <CascadingValue Value="this">
+        <DynamicComponent Type=@Type Parameters=@Parameters/>
+    </CascadingValue>
+}

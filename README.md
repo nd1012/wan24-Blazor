@@ -1,13 +1,14 @@
 # wan24-Blazor
 
-This Razor library contains Blazor WebAssembly components and tools with 
-Bootstrap 5 support (.NET 8) for Blazor clients (not server side rendering).
+This Razor library contains Blazor (.NET 8) WebAssembly components and tools 
+with Bootstrap 5 support for Blazor clients (not server side rendering).
 
 **Included** is:
 
-- Layout component
+- Layout components
 - Several inheritable components
-- Bootstrap Icons version 1.11.3 SVG images (as generated C# code)
+- Bootstrap Icons version 1.11.3 SVG images (as generated C# code, from the 
+referenced `wan24-Blazor-Shared-Core` NuGet package)
 - A bunch of validation attributes
 - DOM manipulation helper
 - File download helper (for sending a computed file download to the client 
@@ -19,6 +20,8 @@ WebAssembly and JavaScript
 
 - Bootstrap Icons SVG files (the SVG XML accessable using the `Images` class 
 only)
+- The Bootstrap Icons `bootstrap.svg` file was excluded completely (also from 
+the generated C# code in the `wan24-Blazor-Shared-Core` NuGet package)
 - Bootstrap 5 JS and CSS (reference the 
 [`wan24-Blazor-Bootstrap` NuGet package](https://www.nuget.org/packages/wan24-Blazor-Bootstrap/))
 - Bootstrap Icons fonts and CSS (reference the 
@@ -34,6 +37,14 @@ this example is hosted online
 
 This library is available as a 
 [NuGet package](https://www.nuget.org/packages/wan24-Blazor/).
+
+There's a library with shared types which you may use at the server side, for 
+example: 
+[`wan24-Blazor-Shared` NuGet package](https://www.nuget.org/packages/wan24-Blazor-Shared/)
+This library references the 
+[`wan24-Blazor-Shared-Core` NuGet package](https://www.nuget.org/packages/wan24-Blazor-Shared-Core/), 
+which doesn't reference any ASP.NET Core dependencies ('cause it's contents 
+doesn't need Razor or Blazor in order to be able to work).
 
 ### Pre-requirements
 
@@ -59,7 +70,7 @@ build |= BuildType.Release;
 #else
 build |= BuildType.Debug;
 #endif
-await wan24.Blazor.RazorStartup.StartAsync(
+await wan24.Blazor.Startup.StartAsync(
 	wan24.Blazor.GuiType.WASM, 
 	build, 
 	builder.Services
@@ -99,7 +110,7 @@ build |= wan24.Blazor.BuildType.Release;
 #else
 build |= wan24.Blazor.BuildType.Debug;
 #endif
-wan24.Blazor.RazorStartup.Start(
+wan24.Blazor.Startup.Start(
 	wan24.Blazor.GuiType.MAUI, 
 	build, 
 	builder.Services
@@ -118,6 +129,8 @@ Optional imports which may be helpful:
 ```razor
 // General
 @using wan24.Blazor;// Some extensions
+@using wan24.Blazor.Parameters;// Base parameters
+@using wan24.Blazor.Parameters.Complex;// Complex parameters
 @using wan24.Blazor.Components;// Base components
 @using wan24.Blazor.Components.Layouts;// Layout components
 @using wan24.Blazor.Components.Complex;// Complex components
@@ -126,6 +139,8 @@ Optional imports which may be helpful:
 
 // Blazor tools
 @using static wan24.Blazor.BlazorEnv;// WebAssembly environment
+@using static wan24.Blazor.BlazorTools;// Blazor tools
+@using static wan24.Blazor.BlazorToolsShared;// Shared blazor tools
 @using static wan24.Blazor.GuiEnv;// GUI enironment
 @using static wan24.Blazor.Helper;// Useful helper methods
 @using static wan24.Blazor.ToastLogger;// Toast message helper
@@ -266,6 +281,8 @@ The `LayoutBase` is a layout base component, which is used by
 | top header | on top of the screen | `TopHeader` | `TopHeaderParameters` | `TopHeaderSection` | `FlexLayoutTopHeader` |
 | sidebar | at the side of the content between top header and bottom footer | `Sidebar` | `SidebarParameters` | `SidebarSection` | `FlexLayoutSidebar` |
 | header | on top of the body | `Header` | `HeaderParameters` | `HeaderSection` | `FlexLayoutHeader` |
+| body header | on top of the body, scrolls with the body content | `BodyHeader` | `BodyHeaderParameters` | `BodyHeaderSection` | `FlexLayoutBodyHeader` |
+| body footer | at the bottom of the body, scrolls with the body content | `BodyFooter` | `BodyFooterParameters` | `BodyFooterSection` | `FlexLayoutBodyFooter` |
 | content sidebar | at the side of the content | `ContentSidebar` | `ContentSidebarParameters` | `ContentSidebarSection` | `FlexLayoutContentSidebar` |
 | footer | at the bottom of the body | `Footer` | `FooterParameters` | `FooterSection` | `FlexLayoutFooter` |
 | bottom footer | at the bottom of the screen | `BottomFooter` | `BottomFooterParameters` | `BottomFooterSection` | `FlexLayoutBottomFooter` |
@@ -288,17 +305,17 @@ ________________________________________________________________________________
 ================================================================================
 | Sidebar | Header                                                             |
 |         |____________________________________________________________________|
-|         | Body                                                     | Content |
-|         |                                                          | sidebar |
+|         | Body header                                              | Content |
+|         |__________________________________________________________| sidebar |
+|         | Body                                                     |         |
 |         |                                                          |         |
 |         |                                                          |         |
 |         |                                                          |         |
 |         |                                                          |         |
 |         |                                                          |         |
-|         |                                                          |         |
-|         |                                                          |         |
-|         |                                                          |         |
-|         |____________________________________________________________________|
+|         |__________________________________________________________|         |
+|         | Body footer                                              |         |
+|         |====================================================================|
 |         | Footer                                                             |
 ================================================================================
 | Bottom footer                                                                |
@@ -313,16 +330,16 @@ ________________________________________________________________________________
 ================================================================================
 | Sidebar | Header                                                   | Content |
 |         |__________________________________________________________| sidebar |
+|         | Body header                                              |         |
+|         |__________________________________________________________|         |
 |         | Body                                                     |         |
 |         |                                                          |         |
 |         |                                                          |         |
 |         |                                                          |         |
 |         |                                                          |         |
 |         |                                                          |         |
-|         |                                                          |         |
-|         |                                                          |         |
-|         |                                                          |         |
-|         |                                                          |         |
+|         |__________________________________________________________|         |
+|         | Body footer                                              |         |
 |         |__________________________________________________________|         |
 |         | Footer                                                   |         |
 ================================================================================
@@ -398,26 +415,37 @@ control their display behavior as required.
 | `RowFlexBox` | Row direction flex box | `Box` | `div` | - |
 | `GrowBox` | Generic growing flex box content which may be a flex box, too | `Box` | `div` | - |
 | `Content` | Content container with padding which may be a flex box | `Box` | `div` | - |
+| `Divider` | Horizontal/vertical divider | `Box` | `div` | - |
+| `Inline` | Inline container | `Box` | `span` | - |
 | **Text** |  |  |  |  |
-| `LeadText` | Lead text container | `Box>BodyText` | `p` | - |
+| `LeadText` | Lead text container | `BodyText` | `p` | - |
 | `BodyText` | Text container | `Box` | `p` | - |
-| `SmallText` | Small text container | `Box>BodyText` | `small` | - |
-| **Images** |  |  |  |
+| `SmallText` | Small text container | `BodyText` | `small` | - |
+| `PageHeading` | Page `h1` and title (of the browser window) | `ParentComponentBase` | `h1` | - |
+| **Images** |  |  |  |  |
 | `Image` | To display an image from an URI or SVG XML | `Box` | `img` or `span` (if SVG XML and no custom tag name was defined) | `UseImageSection` |
 | **Clickable** |  |  |  |  |
 | `Clickable` | Click handling generic HTML element (may navigate, if `Href` was set) | `Box` | `div` | - |
-| `Link` | Link HTML element | `Box>Clickable` | `a` | - |
-| `HoverLink` | Link HTML element which shows an underline only when hovering | `Box>Clickable>Link` | `a` | - |
-| `ClickButton` | Button with text and/or icon | `Box>Clickable` | `button` | - |
-| `MenuItem` | Generic menu item with text and/or icon | `Box>Clickable>ClickButton` | `div` | - |
+| `Link` | Link HTML element | `Clickable` | `a` | - |
+| `HoverLink` | Link HTML element which shows an underline only when hovering | `Link` | `a` | - |
+| `ClickButton` | Button with text and/or icon | `Clickable` | `button` | - |
+| `MenuItem` | Generic menu item with text and/or icon | `ClickButton` | `div` | - |
 | **Flex layout** |  |  |  |  |
 | `FlexLayoutTopHeader` | Override the top header of the layout | `ComponentBase` | - | - |
 | `FlexLayoutSidebar` | Override the sidebar of the layout | `ComponentBase` | - | - |
 | `FlexLayoutHeader` | Override the header of the layout | `ComponentBase` | - | - |
+| `FlexLayoutBodyHeader` | Override the body header of the layout | `ComponentBase` | - | - |
+| `FlexLayoutBodyFoter` | Override the body footer of the layout | `ComponentBase` | - | - |
 | `FlexLayoutContentSidebar` | Override the content sidebar of the layout | `ComponentBase` | - | - |
 | `FlexLayoutFooter` | Override the footer of the layout | `ComponentBase` | - | - |
 | `FlexLayoutBottomBooter` | Override the bottom footer of the layout | `ComponentBase` | - | - |
+| **Complex** |  |  |  |  |
+| `Bar` | A menu bar | `Box` | `div` | - |
+| `BarItemBase` | An abstract base component for a menu bar item | `ParentComponentBase` | - | - |
+| `BarItem` | A menu bar item | `BarItemBase` | - | - |
+| `BarBranding` | A menu bar branding | `BarItem` | - | - |
 | **Others** |  |  |  |  |
+| `Theme` | For applying a `BsTheme` inline | `ComponentBase` | `style` | - |
 
 All components inherit `BlazorComponentBase` and `ParentComponentBase`, so they
 
@@ -434,7 +462,7 @@ All components inherit `BlazorComponentBase` and `ParentComponentBase`, so they
 | may have rounded edges | parameter `Rounded` | `rounded` |
 | may drop a shadow | parameter `Shadow="..."` | `shadow(-sm/lg)` |
 | allow overflow behavior customization | parameter `Overflow(X/Y)="..."` | `overflow(-x/y)-hidden/visible/scroll` |
-| allow setting a z-index | parameter `ZIndex="..."` | - |
+| allow setting a z-index (also set as attribute) | parameter `ZIndex="..."` | - |
 | allow floating | parameter `Float="..."` | `float-start/end` |
 | allow setting a background color | parameter `BackGroundColor="..."` | `bg-[COLOR]` |
 | allow subtle background color | parameter `BackGroundSubtle` | `bg-[COLOR]-subtle` |
@@ -456,6 +484,9 @@ All components inherit `BlazorComponentBase` and `ParentComponentBase`, so they
 | allow border emphasis color | parameter `BorderColorEmphasis` | `border-[COLOR]-emphasis` |
 | allow border opacity | parameter `BorderOpacity="..."` | `border-opacity-[OPACITY]` |
 | allow a CSS color setting | parameter `Color="..."` | `color: [COLOR]` |
+| allow disabled state (also set as attribute) | parameter `Disabled` | `disabled` |
+| allow hidden state (set as attribute) | parameter `Hidden` | - |
+| allow active state | parameter `IsActive` | `active` |
 | **Flex box CSS** | | |
 | allow flex column behavior | parameter `FlexBox` | `d-flex flex-column` |
 | allow flex box behavior | parameter `Flex="..."` | `d-flex flex-row/column(-reverse)` |
@@ -464,6 +495,16 @@ All components inherit `BlazorComponentBase` and `ParentComponentBase`, so they
 | **Others** | | |
 | include a protected click handler delegate template | protected method `OnClickAsync` | - |
 | allow child elements | `ChildContent` | - |
+| allow forcing rendering | method `Update` | - |
+| **Configuration** | | |
+| allow applying parameters on initialization | parameter `ApplyParameters` | - |
+| allow exporting parameters | property `AllParameters` | - |
+| allow getting default parameters | property `DefaultParameters` | - |
+| allow getting current parameters | property `CurrentParameters` | - |
+| allow getting object property names | property `ObjectProperties` | - |
+| allow getting design property names | property `DesignProperties` | - |
+| allow getting accessability property names | property `AccessabilityProperties` | - |
+| allow applying parameters | method `ApplyToExcluding/Including` | - |
 
 **NOTE**: The `TagName` parameter isn't part of `BlazorComponentBase` or 
 `ParentComponentBase`, but all abstract components support defining the HTML 
@@ -628,7 +669,10 @@ pages and components:
 | `WindowHeight` | Viewport height in pixel |
 | `IsSmallScreen` | If the display is small (mobile phone) |
 | `IsLargeScreen` | If the display is large (tablet+) |
+| `LightMode` | If we're in light color mode |
+| `DarkMode` | If we're in Dark color mode |
 | `DisplayChanged` | If rendering because of a display change (landscape <-> portrait or small <-> large) |
+| `ColorModeChanged` | If rendering because of a color mode change (light <-> dark mode) |
 | **`BlazorTools`** | |
 | `IfLandscape(...(, ...))` | Return something in landscape mode (or something else in portrait mode) |
 | `IfPortrait(...(, ...))` | Return something in portrait mode (or something else in landscape mode) |
@@ -639,6 +683,11 @@ pages and components:
 | `ErrorDialog(...)` | Display a modal error dialog |
 | `CreateElementId()` | Create an unique ID for an element |
 | `CreateSectionId()` | Create an unique section ID |
+| **`BlazorToolsShared`** | |
+| `IsHrefMatch(...)` | Determine if an absolute URI path matches another absolute URI path (completely (with or without trailing slash) or as prefix) |
+| `EqualsHrefExactlyOrIfTrailingSlashAdded(...)` | Determine if an absolute URI path matches another absolute URI path exactly (with or without trailing slash) |
+| `IsHrefStrictlyPrefixWithSeparator(...)` | Determine if an absolute URI path is the prefix of another absolute URI path |
+| `GetAbsoluteUriPathFromHref(...)` | Get the absolute URI path from a Href value (without parameters and anchor) |
 | **`Logging`** | |
 | `Trace` | If logging trace messages |
 | `Debug` | If logging debug messages |
@@ -708,6 +757,9 @@ Things you can do with an element (except comment, text or CDATA):
 **NOTE**: All returned DOM elements will get an unique ID, if they didn't have 
 one already (except comment, text or CDATA)!
 
+You may also create new DOM elements (non-comment/CDATA/text) for a known 
+existing parent element.
+
 **CAUTION**: Usually all DOM manipulation should be done by the .NET 
 WebAssembly rendering functionality of Razor. Use this kind of manual DOM 
 manipulation only as an exception, if nothing else works!
@@ -749,7 +801,7 @@ The JavaScript helpers module include all methods that are used from
 | `class DownloadStream` | Manages a (file download) stream |
 
 For this simply import the `blazorGateway` module from the URI 
-`./_content/wan24.Blazor/wwwroot/js/minified/blazorGateway.min.js`. Sources of 
+`_content/wan24-Blazor/js/minified/blazorGateway.min.js`. Sources of 
 the script including DocComments can be found in `TypeScript/blazorGateway.ts` 
 in the `wan24-Blazor` project in this repository.
 

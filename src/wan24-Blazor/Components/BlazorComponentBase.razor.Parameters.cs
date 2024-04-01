@@ -1,37 +1,32 @@
 ﻿using Microsoft.AspNetCore.Components;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor.Components
 {
     // Parameters
     public abstract partial class BlazorComponentBase
     {
-        /// <summary>
-        /// ID
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
-        public string? Id { get; set; }
+        public virtual IParameters? ApplyParameters { get; set; }
 
-        /// <summary>
-        /// Title
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
-        public string? Title { get; set; }
+        public virtual string? Id { get; set; }
 
-        /// <summary>
-        /// CSS class
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
-        public string? Class { get; set; }
+        public virtual string? Title { get; set; }
 
-        /// <summary>
-        /// Flex box type
-        /// </summary>
+        /// <inheritdoc/>
+        [Parameter]
+        public virtual string? Class { get; set; }
+
+        /// <inheritdoc/>
         [Parameter]
         public virtual FlexBoxTypes Flex { get; set; }
 
-        /// <summary>
-        /// Flex box switch (switches to flex row, if set to <see langword="true"/>; disables flex box otherwise)
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
 #pragma warning disable BL0007 // Should be auto property
         public virtual bool FlexBox
@@ -41,202 +36,152 @@ namespace wan24.Blazor.Components
         }
 #pragma warning restore BL0007 // Should be auto property
 
-        /// <summary>
-        /// If displaying as inline flex box, if flex box was enabled
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool InlineFlex { get; set; }
 
-        /// <summary>
-        /// If this is a growing flex element
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool Grow { get; set; }
 
-        /// <summary>
-        /// Rounded?
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool Rounded { get; set; }
 
-        /// <summary>
-        /// Shadow type
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual ShadowTypes Shadow { get; set; }
 
-        /// <summary>
-        /// Overflow type
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual OverflowTypes Overflow { get; set; }
 
-        /// <summary>
-        /// X-overflow type
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual OverflowTypes OverflowX { get; set; }
 
-        /// <summary>
-        /// Y-overflow type
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual OverflowTypes OverflowY { get; set; }
 
-        /// <summary>
-        /// Floating (<see cref="HorizontalAligns.Center"/> is an invalid value and will be ignored)
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual HorizontalAligns Float { get; set; } = HorizontalAligns.Center;
 
-        /// <summary>
-        /// Background color
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual string? BackGroundColor { get; set; }
 
-        /// <summary>
-        /// Subtle backgrund color?
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool BackGroundSubtle { get; set; }
 
-        /// <summary>
-        /// Background gradient
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool BackGroundGradient { get; set; }
 
-        /// <summary>
-        /// Background opacity
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual Opacities BackGroundOpacity { get; set; }
 
-        /// <summary>
-        /// Text color
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual string? TextColor { get; set; }
 
-        /// <summary>
-        /// Text background color (with contract text color)
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual string? TextBackGroundColor { get; set; }
 
-        /// <summary>
-        /// Emphasis text color?
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool TextEmphasis { get; set; }
 
-        /// <summary>
-        /// Text size
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual Sizes? TextSize { get; set; }
 
-        /// <summary>
-        /// Horizontal align
-        /// </summary>
+        /// <inheritdoc/>
+        [Parameter]
+        public virtual FontStyles? FontStyle { get; set; }
+
+        /// <inheritdoc/>
         [Parameter]
         public virtual HorizontalAligns? HAlign { get; set; }
 
-        /// <summary>
-        /// Vertical align
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual VerticalAligns? VAlign { get; set; }
 
-        /// <summary>
-        /// Wrap content?
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool Wrap { get; set; }
 
-        /// <summary>
-        /// Don't wrap content?
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool NoWrap { get; set; }
 
-        /// <summary>
-        /// Truncate text (with ellipsis)?
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool Truncate { get; set; }
 
-        /// <summary>
-        /// Muted text?
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool Muted { get; set; }
 
-        /// <summary>
-        /// Selection behavior
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual TextSelections? Selection { get; set; }
 
-        /// <summary>
-        /// Borders
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual Borders Border { get; set; }
 
-        /// <summary>
-        /// Border color
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual string? BorderColor { get; set; }
 
-        /// <summary>
-        /// Emphasis border
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool BorderEmphasis { get; set; }
 
-        /// <summary>
-        /// Border opacity
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual Opacities BorderOpacity { get; set; }
 
-        /// <summary>
-        /// CSS style
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
-        public string? Style { get; set; }
+        public virtual bool IsActive { get; set; }
 
-        /// <summary>
-        /// CSS color value (not the class name)
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
-        public string? Color { get; set; }
+        public virtual string? Style { get; set; }
 
-        /// <summary>
-        /// Text opacities
-        /// </summary>
+        /// <inheritdoc/>
+        [Parameter]
+        public virtual string? Color { get; set; }
+
+        /// <inheritdoc/>
         [Parameter]
         public virtual Opacities TextOpacity { get; set; }
 
-        /// <summary>
-        /// Z-Index
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual int? ZIndex { get; set; }
 
-        /// <summary>
-        /// Additional attributes
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter(CaptureUnmatchedValues = true)]
-        public Dictionary<string, object>? Attributes { get; set; }
+        public virtual Dictionary<string, object>? Attributes { get; set; }
 
-        /// <summary>
-        /// If the element is disabled
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual bool Disabled { get; set; }
+
+        /// <inheritdoc/>
+        [Parameter]
+        public virtual bool Hidden { get; set; }
+
+        /// <inheritdoc/>
+        [Parameter]
+        public virtual BsThemeMode? ForcedColorMode { get; set; }
     }
 }

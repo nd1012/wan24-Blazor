@@ -91,18 +91,5 @@ namespace wan24.Blazor
         /// <param name="message">Message</param>
         /// <param name="title">Title</param>
         public static void ErrorDialog(in string message, in string? title = null) => BlazorEnv.CurrentDialogService?.Error(message, title ?? _("Error"));*/
-
-        /// <summary>
-        /// Create a unique element ID
-        /// </summary>
-        /// <returns>Element ID</returns>
-        public static string CreateElementId() => $"{new string(new Uid().GetBytes().Encode())}{DateTime.Now.Ticks}";
-
-        /// <summary>
-        /// Create a unique section ID, if a condition is <see langword="true"/>
-        /// </summary>
-        /// <param name="condition">Condition</param>
-        /// <returns>Section ID or <see langword="null"/>, if the <c>condition</c> was <see langword="false"/></returns>
-        public static string? CreateSectionId(in bool condition = true) => condition ? CreateElementId() : null;
     }
 }

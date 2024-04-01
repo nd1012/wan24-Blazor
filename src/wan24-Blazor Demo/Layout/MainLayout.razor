@@ -7,7 +7,40 @@
 @code {
     public MainLayout() : base()
     {
+        Theme = Bs5Theme.Demo;
         Sidebar = typeof(NavMenu);
         ShowSidebarOnSmallLandscape = false;
+        BodyParameters = new()
+        {
+            {nameof(Content.BackGroundGradient), true}
+        };
+        HandleColorModeChange();
+        ColorModeChangesState = true;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            BlazorEnv.OnColorModeChanged += HandleColorModeChange;
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
+        base.Dispose(disposing);
+    }
+
+    protected override Task DisposeCore()
+    {
+        BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
+        return base.DisposeCore();
+    }
+
+    private void HandleColorModeChange()
+    {
+        BodyParameters![nameof(Content.BackGroundColor)] = BlazorEnv.LightMode ? Colors.Light : Colors.Dark;
     }
 }

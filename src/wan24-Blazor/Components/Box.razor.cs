@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Sections;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor.Components
 {
     /// <summary>
     /// Box
     /// </summary>
-    public partial class Box : ParentComponentBase
+    public partial class Box : ParentComponentBase, IBoxParametersExt
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public Box() : base() => TagName = "div";
+        public Box() : this("div") { }
 
         /// <summary>
         /// Constructor
@@ -19,14 +20,27 @@ namespace wan24.Blazor.Components
         /// <param name="tagName">HTML tag name</param>
         protected Box(in string tagName) : base() => TagName = tagName;
 
+        /// <inheritdoc/>
+        public override IParameters DefaultParameters => BoxParametersExt.Instance;
+
+        /// <inheritdoc/>
+        public override IParameters CurrentParameters => new BoxParametersExt(this);
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> ObjectProperties => BoxParametersExt.Instance.ObjectProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> DesignProperties => BoxParametersExt.Instance.DesignProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> AccessabilityProperties => BoxParametersExt.Instance.AccessabilityProperties;
+
         /// <summary>
         /// Use the section of the inheriting top component (do not render the child content - will be rendered from the inheriting top component within the section content)
         /// </summary>
         public virtual string? UseBoxSection { get; protected set; }
 
-        /// <summary>
-        /// HTML tag name
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public virtual string TagName { get; set; }
 
@@ -46,7 +60,7 @@ namespace wan24.Blazor.Components
             }
             else
             {
-                builder.AddContent(2, ChildContent);
+                builder.AddContent(4, ChildContent);
             }
             builder.CloseElement();
         };

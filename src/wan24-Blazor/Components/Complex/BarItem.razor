@@ -1,5 +1,5 @@
-﻿@inherits ComponentBase
+﻿@inherits BarItemBase
 
-<CascadingValue Value="this">
-    <DynamicComponent Type=@Type Parameters=@Parameters />
-</CascadingValue>
+@{
+    base.BuildRenderTree(__builder);
+}

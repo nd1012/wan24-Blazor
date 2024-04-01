@@ -1,131 +1,62 @@
-﻿namespace wan24.Blazor
+﻿using BlazorComponentUtilities;
+using wan24.Core;
+
+namespace wan24.Blazor
 {
     /// <summary>
     /// Extensions
     /// </summary>
-    public static class Extensions
+    public static partial class Extensions
     {
         /// <summary>
-        /// Make the first character a lower case character
+        /// Get the final CSS classes
         /// </summary>
-        /// <param name="str">String</param>
-        /// <returns>String</returns>
-        public static string FirstToLower(this string str) => str.Length < 1 ? str : new([char.ToLower(str[0]), .. str[1..]]);
+        /// <param name="builder">Builder</param>
+        /// <returns>Classes or <see langword="null"/>, if empty</returns>
+        public static string? FinalClasses(this CssBuilder builder)
+            => builder.NullIfEmpty() is not string res ? null : string.Join(' ', res.Split(' ').Where(c => !string.IsNullOrWhiteSpace(c)).Distinct()).Trim();
 
         /// <summary>
-        /// Make the first character an upper case character
+        /// Get the final CSS style
         /// </summary>
-        /// <param name="str">String</param>
-        /// <returns>String</returns>
-        public static string FirstToUpper(this string str) => str.Length < 1 ? str : new([char.ToUpper(str[0]), .. str[1..]]);
-
-        /// <summary>
-        /// Flip
-        /// </summary>
-        /// <param name="orientation">Screen orientation</param>
-        /// <returns>Flipped orientation</returns>
-        public static ScreenOrientations Flip(this ScreenOrientations orientation) => orientation switch
+        /// <param name="builder">Builder</param>
+        /// <returns>Style or <see langword="null"/>, if empty</returns>
+        public static string? FinalStyle(this StyleBuilder builder)
         {
-            ScreenOrientations.Landscape => ScreenOrientations.Portrait,
-            _ => ScreenOrientations.Landscape
-        };
+            if (builder.NullIfEmpty() is not string res) return null;
+            while (res.StartsWith(';')) res = res[1..];
+            while (res.Contains(";;")) res = res.Replace(";;", ";");
+            while (res.Contains("; ;")) res = res.Replace("; ;", ";");
+            res = res.Trim();
+            return string.IsNullOrWhiteSpace(res) ? null : res;
+        }
 
         /// <summary>
-        /// Flip
+        /// Apply
         /// </summary>
-        /// <param name="orientation">Orientation</param>
-        /// <returns>Flipped orientation</returns>
-        public static Orientations Flip(this Orientations orientation) => orientation switch
+        /// <param name="theme">Theme</param>
+        /// <param name="gateway">Gateway</param>
+        /// <param name="id">DOM element ID to set</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Style element ID</returns>
+        public static async Task<string> ApplyAsync(this IBsTheme theme, BlazorGateway? gateway = null, string? id = null, CancellationToken cancellationToken = default)
         {
-            Orientations.Horizontal => Orientations.Vertical,
-            _ => Orientations.Horizontal
-        };
-
-        /// <summary>
-        /// Flip
-        /// </summary>
-        /// <param name="type">Flex box type</param>
-        /// <returns>Flipped flex box type</returns>
-        public static FlexBoxTypes Flip(this FlexBoxTypes type) => type switch
-        {
-            FlexBoxTypes.Column => FlexBoxTypes.Row,
-            FlexBoxTypes.Row => FlexBoxTypes.Column,
-            FlexBoxTypes.ColumnReverse => FlexBoxTypes.RowReverse,
-            FlexBoxTypes.RowReverse => FlexBoxTypes.ColumnReverse,
-            _ => type
-        };
-
-        /// <summary>
-        /// Get as screen orientation
-        /// </summary>
-        /// <param name="orientation">Orientation</param>
-        /// <returns>Screen orientation</returns>
-        public static ScreenOrientations ToScreenOrientation(this Orientations orientation) => orientation switch
-        {
-            Orientations.Horizontal => ScreenOrientations.Portrait,
-            _ => ScreenOrientations.Landscape
-        };
-
-        /// <summary>
-        /// Get as orientation
-        /// </summary>
-        /// <param name="orientation">Screen orientation</param>
-        /// <returns>Orientation</returns>
-        public static Orientations ToOrientation(this ScreenOrientations orientation) => orientation switch
-        {
-            ScreenOrientations.Portrait => Orientations.Horizontal,
-            _ => Orientations.Vertical
-        };
-
-        /// <summary>
-        /// Get as orientation
-        /// </summary>
-        /// <param name="type">Flex box type</param>
-        /// <returns>Orientation</returns>
-        public static Orientations ToOrientation(this FlexBoxTypes type) => type switch
-        {
-            FlexBoxTypes.Column => Orientations.Horizontal,
-            FlexBoxTypes.ColumnReverse => Orientations.Horizontal,
-            FlexBoxTypes.Row => Orientations.Vertical,
-            FlexBoxTypes.RowReverse => Orientations.Vertical,
-            _ => throw new ArgumentException($"Can't convert flex box type {type} to orientation", nameof(type))
-        };
-
-        /// <summary>
-        /// Get as flex box type
-        /// </summary>
-        /// <param name="orientation">Orientation</param>
-        /// <returns>Flex box type</returns>
-        public static FlexBoxTypes ToFlexBoxType(this Orientations orientation) => orientation switch
-        {
-            Orientations.Horizontal => FlexBoxTypes.Column,
-            _ => FlexBoxTypes.Row
-        };
-
-        /// <summary>
-        /// Inverse the order
-        /// </summary>
-        /// <param name="type">Flex box type</param>
-        /// <returns>Inversed order flex box type</returns>
-        public static FlexBoxTypes InverseOrder(this FlexBoxTypes type) => type switch
-        {
-            FlexBoxTypes.Column => FlexBoxTypes.ColumnReverse,
-            FlexBoxTypes.Row => FlexBoxTypes.RowReverse,
-            FlexBoxTypes.ColumnReverse => FlexBoxTypes.Column,
-            FlexBoxTypes.RowReverse => FlexBoxTypes.Row,
-            _ => type
-        };
-
-        /// <summary>
-        /// Get CSS from large/small size
-        /// </summary>
-        /// <param name="size">Size</param>
-        /// <returns>CSS</returns>
-        public static string ToCss(this Sizes size) => size switch
-        {
-            Sizes.Large => "lg",
-            Sizes.Small => "sm",
-            _ => throw new ArgumentException("Only large/small sizes are supported", nameof(size))
-        };
+            gateway ??= BlazorGateway.Instance ?? throw new ArgumentNullException(nameof(gateway));
+            DomElement head = (await gateway.GetElementsByTagNameAsync("head", cancellationToken).DynamicContext()).FirstOrDefault()
+                ?? throw new InvalidDataException("Missing HEAD element in DOM");
+            await using (head.DynamicContext())
+                return await gateway.CreateElementAsync(
+                    head.ID!,
+                    "style",
+                    id,
+                    new Dictionary<string, string>()
+                    {
+                        {"type", "text/css" }
+                    },
+                    text: theme.ToString(),
+                    cancellationToken: cancellationToken
+                    ).DynamicContext()
+                    ?? throw new InvalidOperationException("Failed to create the theme style DOM element (see JS console messages)");
+        }
     }
 }

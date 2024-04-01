@@ -24,7 +24,7 @@ namespace wan24.Blazor
         {
             folder ??= "../../../../../bootstrap-icons-1.11.3";
             template ??= "Images.cs";
-            output ??= "../../../../wan24-Blazor/Images.cs";
+            output ??= "../../../../wan24-Blazor-Shared-Core/Images.cs";
             string[] outputTemplate = (await File.ReadAllTextAsync(template).DynamicContext()).Replace("\r", string.Empty).Split("#define CONTENT\n", 2);
             if (outputTemplate.Length != 2) throw new InvalidDataException("Invalid template");
             FileStream outputFile = FsHelper.CreateFileStream(output, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, overwrite: true);
@@ -36,9 +36,10 @@ namespace wan24.Blazor
                 foreach (string fn in FsHelper.FindFiles(folder, searchPattern: "*.svg", recursive: false))
                 {
                     Logging.WriteInfo(fn);
+                    string name = Path.GetFileNameWithoutExtension(fn);
+                    if (name == "bootstrap-icons") continue;
                     string svg = await File.ReadAllTextAsync(fn).DynamicContext();
                     while (RX_ATTRS.IsMatch(svg)) svg = RX_ATTRS.Replace(svg, "$1$4");
-                    string name = Path.GetFileNameWithoutExtension(fn);
                     StringBuilder sb = new(256 + (svg.Length << 1));
                     if (first)
                     {
@@ -58,7 +59,7 @@ namespace wan24.Blazor
             }
         }
 
-        [GeneratedRegex(@"^(.*)(\s(width|height|viewport)\=\""[\s\d]*\"")(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline, "de-DE")]
+        [GeneratedRegex(@"^(.*)(\s+(width|height)\=\""[\s\d]*\"")(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline, "de-DE")]
         private static partial Regex RX_ATTRS_Generator();
     }
 }

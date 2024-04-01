@@ -15,10 +15,9 @@ namespace wan24.Blazor
         public virtual async ValueTask<DomElement?> GetElementByIdAsync(string id, CancellationToken cancellationToken = default)
         {
             EnsureUndisposed();
-            return await Gateway.InvokeAsync<string?>("getElementByid", cancellationToken, id).DynamicContext() is not string json
-                ? null
-                : (await JsonHelper.DecodeAsync<DomElement>(json, cancellationToken).DynamicContext()
-                    ?? throw new InvalidDataException("Failed to decode the DOM element")).SetGateway(this);
+            return await Gateway.InvokeAsync<string?>("getElementByid", cancellationToken, id).DynamicContext() is string json
+                ? SetGateway(JsonHelper.Decode<DomElement>(json) ?? throw new InvalidDataException("Failed to decode DOM element"))
+                : null;
         }
 
         /// <summary>
@@ -30,11 +29,9 @@ namespace wan24.Blazor
         public virtual async ValueTask<HashSet<DomElement>> GetElementsByTagNameAsync(string tag, CancellationToken cancellationToken = default)
         {
             EnsureUndisposed();
-            return await Gateway.InvokeAsync<string?>("getElementsByTagName", cancellationToken, tag).DynamicContext() is not string json
-                ? []
-                : new((await JsonHelper.DecodeAsync<string[]>(json, cancellationToken).DynamicContext()
-                    ?? throw new InvalidDataException("Failed to decode the DOM element list"))
-                    .Select(json => (JsonHelper.Decode<DomElement>(json) ?? throw new InvalidDataException("Failed to decode the DOM element")).SetGateway(this)));
+            return new((JsonHelper.Decode<DomElement[]>(await Gateway.InvokeAsync<string>("getElementsByTagName", cancellationToken, tag).DynamicContext())
+                ?? throw new InvalidDataException("Failed to decode DOM element list"))
+                .Select(e => SetGateway(e)));
         }
 
         /// <summary>
@@ -46,10 +43,9 @@ namespace wan24.Blazor
         public virtual async ValueTask<DomElement?> QuerySelectorAsync(string selector, CancellationToken cancellationToken = default)
         {
             EnsureUndisposed();
-            return await Gateway.InvokeAsync<string?>("querySelector", cancellationToken, selector).DynamicContext() is not string json
-                ? null
-                : (await JsonHelper.DecodeAsync<DomElement>(json, cancellationToken).DynamicContext()
-                    ?? throw new InvalidDataException("Failed to decode the DOM element")).SetGateway(this);
+            return await Gateway.InvokeAsync<string?>("querySelector", cancellationToken, selector).DynamicContext() is string json
+                ? SetGateway(JsonHelper.Decode<DomElement>(json) ?? throw new InvalidDataException("Failed to decode DOM element"))
+                : null;
         }
 
         /// <summary>
@@ -61,11 +57,9 @@ namespace wan24.Blazor
         public virtual async ValueTask<HashSet<DomElement>> QuerySelectorAllAsync(string selector, CancellationToken cancellationToken = default)
         {
             EnsureUndisposed();
-            return await Gateway.InvokeAsync<string?>("querySelectorAll", cancellationToken, selector).DynamicContext() is not string json
-                ? []
-                : new((await JsonHelper.DecodeAsync<string[]>(json, cancellationToken).DynamicContext()
-                    ?? throw new InvalidDataException("Failed to decode the DOM element list"))
-                    .Select(json => (JsonHelper.Decode<DomElement>(json) ?? throw new InvalidDataException("Failed to decode the DOM element")).SetGateway(this)));
+            return new((JsonHelper.Decode<HashSet<DomElement>>(await Gateway.InvokeAsync<string>("querySelectorAll", cancellationToken, selector).DynamicContext())
+                ?? throw new InvalidDataException("Failed to decode DOM element list"))
+                .Select(e => SetGateway(e)));
         }
 
         /// <summary>
@@ -78,6 +72,38 @@ namespace wan24.Blazor
         {
             EnsureUndisposed();
             return await Gateway.InvokeAsync<int>("querySelectorAllCount", cancellationToken, selector).DynamicContext();
+        }
+
+        /// <summary>
+        /// Create a new DOM element
+        /// </summary>
+        /// <param name="parent">Parent ID</param>
+        /// <param name="tag">HTML tag name</param>
+        /// <param name="id">ID</param>
+        /// <param name="attr">Attributes</param>
+        /// <param name="text">Inner text</param>
+        /// <param name="html">Inner HTML</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>New DOM element ID or <see langword="null"/> on error (see JS console messages)</returns>
+        public virtual async ValueTask<string?> CreateElementAsync(
+            string parent,
+            string tag,
+            string? id = null,
+            Dictionary<string, string>? attr = null,
+            string? text = null,
+            string? html = null,
+            CancellationToken cancellationToken = default
+            )
+        {
+            EnsureUndisposed();
+            return await Gateway.InvokeAsync<string?>("createElement", cancellationToken, [
+                parent,
+                tag,
+                id,
+                attr is null ? null : JsonHelper.Encode(attr),
+                text,
+                html
+                ]).DynamicContext();
         }
     }
 }

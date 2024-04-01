@@ -1,17 +1,17 @@
 ﻿@page "/counter"
 
-<PageTitle>Counter</PageTitle>
+<PageHeading>Counter</PageHeading>
 
-<h1>Counter</h1>
+<BodyText>Current count: @currentCount</BodyText>
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<Inline>
+    <ClickButton ClickHandler=@(new EventCallback<MouseEventArgs>(receiver: null, IncrementCount)) Text="Click me"/>
+</Inline>
 
 @code {
     private int currentCount = 0;
 
-    private void IncrementCount()
+    private void IncrementCount(MouseEventArgs e)
     {
         currentCount++;
     }

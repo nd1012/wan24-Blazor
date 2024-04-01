@@ -1,18 +1,6 @@
 ﻿@inherits Box
+@implements IColumnFlexBoxParametersExt
 
 @{
     base.BuildRenderTree(__builder);
-}
-
-@code {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public ColumnFlexBox() : base() => Flex = FlexBoxTypes.Column;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="tagName">HTML tag name</param>
-    protected ColumnFlexBox(in string tagName) : base(tagName) => Flex = FlexBoxTypes.Column;
 }

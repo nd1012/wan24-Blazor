@@ -9,7 +9,7 @@ namespace wan24.Blazor.Components
     /// Constructor
     /// </remarks>
     /// <param name="asyncDisposing">If <see cref="DisposeCore"/> was implemented</param>
-    public abstract partial class DisposableParentComponentBase(in bool asyncDisposing) : ParentComponentBase(), IDisposable, IAsyncDisposable
+    public abstract partial class DisposableParentComponentBase(in bool asyncDisposing) : ParentComponentBase(), IDisposableParentComponent
     {
         /// <summary>
         /// An object for thread synchronization
@@ -31,6 +31,10 @@ namespace wan24.Blazor.Components
         /// If disposed
         /// </summary>
         private bool _IsDisposed = false;
+        /// <summary>
+        /// DOM element
+        /// </summary>
+        private DomElement? Element = null;
 
         /// <summary>
         /// Destructor
@@ -52,13 +56,70 @@ namespace wan24.Blazor.Components
         public bool IsDisposed => _IsDisposed;
 
         /// <summary>
+        /// Get the DOM element
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>DOM element (will be disposed)</returns>
+        public async Task<DomElement> GetDomElement(CancellationToken cancellationToken = default)
+        {
+            EnsureUndisposed();
+            if (Element is not null) return Element;
+            if (BlazorGateway.Instance is null || Id is null) throw new InvalidOperationException();
+            return Element = await BlazorGateway.Instance.GetElementByIdAsync(Id, cancellationToken).DynamicContext()
+                ?? throw new InvalidDataException($"DOM element \"{Id}\" not found");
+        }
+
+        /// <summary>
+        /// Ensure undisposed state
+        /// </summary>
+        /// <param name="allowDisposing">Allow disposing?</param>
+        /// <param name="throwWhenDisposing">Throw an exception when disposing</param>
+        /// <returns>If not disposed</returns>
+        /// <exception cref="ObjectDisposedException">Disposing or disposed</exception>
+        protected virtual bool EnsureUndisposed(in bool allowDisposing = false, in bool throwWhenDisposing = true)
+        {
+            if (!_IsDisposed && (!_IsDisposing || allowDisposing)) return true;
+            if (!throwWhenDisposing) return false;
+            throw new ObjectDisposedException(GetType().ToString());
+        }
+
+        /// <summary>
+        /// Dispose the DOM element
+        /// </summary>
+        protected virtual void DisposeElement()
+        {
+            if (Element is null) return;
+            Element.Dispose();
+            Element = null;
+        }
+
+        /// <summary>
+        /// Dispose the DOM element
+        /// </summary>
+        protected virtual async Task DisposeElementAsync()
+        {
+            if (Element is null) return;
+            await Element.DisposeAsync().DynamicContext();
+            Element = null;
+        }
+
+        /// <summary>
         /// Dispose
         /// </summary>
         /// <param name="disposing">If disposing</param>
         protected virtual void Dispose(bool disposing) { }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Dispose
+        /// </summary>
         protected virtual Task DisposeCore() => Task.CompletedTask;
+
+        /// <inheritdoc/>
+        protected override async Task OnInitializedAsync()
+        {
+            if (!IsVisible) await DisposeElementAsync().DynamicContext();
+            await base.OnInitializedAsync().DynamicContext();
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -71,6 +132,7 @@ namespace wan24.Blazor.Components
             DisposeCancellation.Cancel();
             Dispose(disposing: true);
             DisposeCancellation.Dispose();
+            DisposeElement();
             _IsDisposed = true;
             GC.SuppressFinalize(this);
         }
@@ -91,6 +153,7 @@ namespace wan24.Blazor.Components
             DisposeCancellation.Cancel();
             await DisposeCore().DynamicContext();
             DisposeCancellation.Dispose();
+            await DisposeElementAsync().DynamicContext();
             _IsDisposed = true;
             GC.SuppressFinalize(this);
         }

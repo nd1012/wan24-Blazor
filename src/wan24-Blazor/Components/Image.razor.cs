@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System.Diagnostics.CodeAnalysis;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor.Components
 {
     /// <summary>
     /// Image
     /// </summary>
-    public partial class Image : Box
+    public partial class Image : Box, IImageParametersExt
     {
         /// <summary>
         /// Constructor
@@ -17,46 +19,49 @@ namespace wan24.Blazor.Components
         /// </summary>
         public virtual string? UseImageSection { get; protected set; }
 
-        /// <summary>
-        /// Source URI
-        /// </summary>
+        /// <inheritdoc/>
+        public override IParameters DefaultParameters => ImageParametersExt.Instance;
+
+        /// <inheritdoc/>
+        public override IParameters CurrentParameters => new ImageParametersExt(this);
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> ObjectProperties => ImageParametersExt.Instance.ObjectProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> DesignProperties => ImageParametersExt.Instance.DesignProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> AccessabilityProperties => ImageParametersExt.Instance.AccessabilityProperties;
+
+        /// <inheritdoc/>
         [Parameter]
         public string? Src { get; set; }
 
-        /// <summary>
-        /// SVG XML (ignored when <see cref="Src" /> is being used; see <see cref="Images" /> and  <see cref="Images.AsSvgXml(string)" />
-        /// CAUTION: Will be used 1:1 in HTML!)
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public string? SvgXml { get; set; }
 
-        /// <summary>
-        /// Image size CSS
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public string? Size { get; set; }
 
-        /// <summary>
-        /// Image width HTML
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public string? Width { get; set; }
 
-        /// <summary>
-        /// Image size HTML
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public string? Height { get; set; }
 
-        /// <summary>
-        /// SVG CSS color (not a class name)
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public string? SvgColor { get; set; }
 
         /// <summary>
         /// Render SVG?
         /// </summary>
+        [MemberNotNullWhen(returnValue: true, nameof(SvgXml))]
         public bool RenderSvg => UseImageSection is null && Src is null && SvgXml is not null;
 
         /// <inheritdoc/>
@@ -80,10 +85,10 @@ namespace wan24.Blazor.Components
         /// <inheritdoc />
         protected override void OnParametersSet()
         {
-            UseBoxSection = BlazorTools.CreateSectionId(ChildContent is not null || (Src is null && SvgXml is not null));
+            base.OnParametersSet();
+            UseBoxSection = Helper.CreateSectionId(ChildContent is not null || (Src is null && SvgXml is not null));
             if (UseBoxSection is not null && TagName == "img") TagName = "span";
             Title ??= Src;
-            base.OnParametersSet();
         }
     }
 }

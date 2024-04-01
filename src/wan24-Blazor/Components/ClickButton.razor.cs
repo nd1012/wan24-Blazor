@@ -1,5 +1,6 @@
 ﻿using BlazorComponentUtilities;
 using Microsoft.AspNetCore.Components;
+using wan24.Blazor.Parameters;
 using wan24.Core;
 
 namespace wan24.Blazor.Components
@@ -7,7 +8,7 @@ namespace wan24.Blazor.Components
     /// <summary>
     /// Click button
     /// </summary>
-    public partial class ClickButton : Clickable
+    public partial class ClickButton : Clickable, IClickButtonParametersExt
     {
         /// <summary>
         /// Constructor
@@ -20,53 +21,65 @@ namespace wan24.Blazor.Components
         /// <param name="tagName">HTML tag name</param>
         protected ClickButton(in string tagName) : base(tagName)
         {
-            UseBoxSection = BlazorTools.CreateSectionId();
+            UseBoxSection = Helper.CreateSectionId();
             Flex = FlexBoxTypes.Row;
             Overflow = OverflowTypes.Hidden;
+            HAlign = HorizontalAligns.Center;
             VAlign = VerticalAligns.Center;
+            BackGroundColor = Colors.Primary;
+            Truncate = true;
+            NoWrap = true;
         }
 
-        /// <summary>
-        /// Text
-        /// </summary>
+        /// <inheritdoc/>
+        public override IParameters DefaultParameters => ClickButtonParametersExt.Instance;
+
+        /// <inheritdoc/>
+        public override IParameters CurrentParameters => new ClickButtonParametersExt(this);
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> ClickablePropertyNames => ClickButtonParametersExt.Instance.ClickablePropertyNames;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> ObjectProperties => ClickButtonParametersExt.Instance.ObjectProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> DesignProperties => ClickButtonParametersExt.Instance.DesignProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> AccessabilityProperties => ClickButtonParametersExt.Instance.AccessabilityProperties;
+
+        /// <inheritdoc/>
         [Parameter]
         public virtual string? Text { get; set; }
 
         /// <summary>
         /// If to show the text
         /// </summary>
-        public virtual bool ShowText => true;
+        public virtual bool ShowText => !string.IsNullOrWhiteSpace(Text);
 
-        /// <summary>
-        /// Text CSS classes
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
-        public virtual string? TextClass { get; set; }
+        public virtual IBodyTextParameters? TextParameters { get; set; }
 
         /// <summary>
         /// Text CSS factory classes
         /// </summary>
-        public virtual string? TextFactoryClass => "ps-3";
+        public virtual string? TextFactoryClass => (!IsActive && ShowIcon) || (IsActive && ShowActiveIcon) ? "ps-3" : null;
 
         /// <summary>
         /// All text CSS classes
         /// </summary>
-        public string? AllTextClass
+        public virtual string? AllTextClass
         {
             get
             {
                 CssBuilder builder = new();
-                if (TextFactoryClass is not null) builder.AddClass(TextFactoryClass);
-                if (TextClass is not null) builder.AddClass(TextClass);
-                return builder.NullIfEmpty();
+                if (TextFactoryClass is string factoryCss) builder.AddClass(factoryCss);
+                if (TextParameters?.Class is string css) builder.AddClass(css);
+                return builder.FinalClasses();
             }
         }
-
-        /// <summary>
-        /// Text CSS style
-        /// </summary>
-        [Parameter]
-        public virtual string? TextStyle { get; set; }
 
         /// <summary>
         /// Text CSS factory style
@@ -76,22 +89,16 @@ namespace wan24.Blazor.Components
         /// <summary>
         /// All text CSS style
         /// </summary>
-        public string? AllTextStyle
+        public virtual string? AllTextStyle
         {
             get
             {
                 StyleBuilder builder = new();
-                if (TextFactoryStyle is not null) builder.AddStyle(TextFactoryStyle);
-                if (TextStyle is not null) builder.AddStyle(TextStyle);
-                return builder.NullIfEmpty();
+                if (TextFactoryStyle is string factoryStyle) builder.AddStyle(factoryStyle);
+                if (TextParameters?.Style is string style) builder.AddStyle(style);
+                return builder.FinalStyle();
             }
         }
-
-        /// <summary>
-        /// Text attributes
-        /// </summary>
-        [Parameter]
-        public virtual Dictionary<string, object>? TextAttributes { get; set; }
 
         /// <summary>
         /// Text component factory attributes
@@ -101,62 +108,54 @@ namespace wan24.Blazor.Components
         /// <summary>
         /// All text attributes
         /// </summary>
-        public Dictionary<string, object> AllTextAttributes
+        public virtual Dictionary<string, object> AllTextAttributes
         {
             get
             {
                 Dictionary<string, object> res = TextFactoryAttributes ?? [];
-                if (TextAttributes is not null) res.Merge(TextAttributes);
+                if (TextParameters?.Attributes is Dictionary<string, object> attr) res.Merge(attr);
                 return res;
             }
         }
-
-        /// <summary>
-        /// Text component parameters
-        /// </summary>
-        [Parameter]
-        public virtual Dictionary<string, object>? TextParameters { get; set; }
 
         /// <summary>
         /// Text component factory parameters
         /// </summary>
-        public virtual Dictionary<string, object>? TextFactoryParameters { get; }
-
-        /// <summary>
-        /// All text parameters
-        /// </summary>
-        public Dictionary<string, object> AllTextParameters
+        public virtual Dictionary<string, object>? TextFactoryParameters
         {
             get
             {
-                Dictionary<string, object> res = TextFactoryParameters ?? [];
-                if (TextParameters is not null) res.Merge(TextParameters);
+                Dictionary<string, object> res = [];
+                res[nameof(TagName)] = "div";
+                res[nameof(Grow)] = true;
+                if (AllTextClass is string css) res[nameof(Class)] = css;
+                if (AllTextStyle is string style) res[nameof(Style)] = style;
                 return res;
             }
         }
 
         /// <summary>
-        /// Icon URI (will disable <see cref="SvgIconXml" />)
+        /// All text parameters
         /// </summary>
+        public virtual Dictionary<string, object> AllTextParameters
+        {
+            get
+            {
+                Dictionary<string, object> res = TextParameters?.AllParameters ?? [];
+                if (TextFactoryParameters is Dictionary<string, object> factoryParameters) res.Merge(factoryParameters);
+                if (AllTextAttributes is Dictionary<string, object> allAttributes) res[nameof(Attributes)] = allAttributes;
+                return res;
+            }
+        }
+
+        /// <inheritdoc/>
         [Parameter]
-        public virtual string? Icon { get; set; }
+        public virtual IImageParameters? IconParameters { get; set; }
 
         /// <summary>
         /// If to show the icon
         /// </summary>
-        public virtual bool ShowIcon => true;
-
-        /// <summary>
-        /// Icon size CSS
-        /// </summary>
-        [Parameter]
-        public virtual string? IconSize { get; set; }
-
-        /// <summary>
-        /// Icon CSS classes (not applicable for <see cref="SvgIconXml" />)
-        /// </summary>
-        [Parameter]
-        public virtual string? IconClass { get; set; }
+        public virtual bool ShowIcon => (!IsActive && HasIcon) || (IsActive && (HasActiveIcon || HasIcon));
 
         /// <summary>
         /// Icon CSS factory classes
@@ -166,22 +165,16 @@ namespace wan24.Blazor.Components
         /// <summary>
         /// All icon CSS classes
         /// </summary>
-        public string? AllIconClass
+        public virtual string? AllIconClass
         {
             get
             {
                 CssBuilder builder = new();
-                if (IconFactoryClass is not null) builder.AddClass(IconFactoryClass);
-                if (IconClass is not null) builder.AddClass(IconClass);
-                return builder.NullIfEmpty();
+                if (IconFactoryClass is string factoryCss) builder.AddClass(factoryCss);
+                if (IconParameters?.Class is string css) builder.AddClass(css);
+                return builder.FinalClasses();
             }
         }
-
-        /// <summary>
-        /// Icon style (not applicable for <see cref="SvgIconXml" />)
-        /// </summary>
-        [Parameter]
-        public virtual string? IconStyle { get; set; }
 
         /// <summary>
         /// Icon CSS factory style
@@ -191,22 +184,16 @@ namespace wan24.Blazor.Components
         /// <summary>
         /// All icon CSS style
         /// </summary>
-        public string? AllIconStyle
+        public virtual string? AllIconStyle
         {
             get
             {
                 StyleBuilder builder = new();
-                if (IconFactoryStyle is not null) builder.AddStyle(IconFactoryStyle);
-                if (IconStyle is not null) builder.AddStyle(IconStyle);
-                return builder.NullIfEmpty();
+                if (IconFactoryStyle is string factoryCss) builder.AddStyle(factoryCss);
+                if (IconParameters?.Style is string style) builder.AddStyle(style);
+                return builder.FinalStyle();
             }
         }
-
-        /// <summary>
-        /// Icon attributes
-        /// </summary>
-        [Parameter]
-        public virtual Dictionary<string, object>? IconAttributes { get; set; }
 
         /// <summary>
         /// Icon component factory attributes
@@ -216,57 +203,154 @@ namespace wan24.Blazor.Components
         /// <summary>
         /// All icon attributes
         /// </summary>
-        public Dictionary<string, object> AllIconAttributes
+        public virtual Dictionary<string, object> AllIconAttributes
         {
             get
             {
                 Dictionary<string, object> res = IconFactoryAttributes ?? [];
-                if (IconAttributes is not null) res.Merge(IconAttributes);
+                if (IconParameters?.Attributes is Dictionary<string, object> attr) res.Merge(attr);
+                if ((Title is not null || Text is not null) && !res.ContainsKey("title")) res["title"] = Title ?? Text!;
                 return res;
             }
         }
-
-        /// <summary>
-        /// Icon component parameters
-        /// </summary>
-        [Parameter]
-        public virtual Dictionary<string, object>? IconParameters { get; set; }
 
         /// <summary>
         /// Icon component factory parameters
         /// </summary>
-        public virtual Dictionary<string, object>? IconFactoryParameters { get; }
-
-        /// <summary>
-        /// All icon parameters
-        /// </summary>
-        public Dictionary<string, object> AllIconParameters
+        public virtual Dictionary<string, object>? IconFactoryParameters
         {
             get
             {
-                Dictionary<string, object> res = IconFactoryParameters ?? [];
-                if (IconParameters is not null) res.Merge(IconParameters);
+                Dictionary<string, object> res = [];
+                res[nameof(TagName)] = "div";
+                res[nameof(Flex)] = FlexBoxTypes.Row;
+                if (GrowIcon) res[nameof(Grow)] = true;
+                if (AllIconClass is string css) res[nameof(Class)] = css;
+                if (AllIconStyle is string style) res[nameof(Style)] = style;
                 return res;
             }
         }
 
         /// <summary>
-        /// SVG icon image XML (ignored when <see cref="Icon" /> is being used; see <see cref="Images" /> and  <see cref="Images.AsSvgXml(string)" /> 
-        /// CAUTION: Will be used 1:1 in HTML!)
+        /// All icon parameters
         /// </summary>
+        public virtual Dictionary<string, object> AllIconParameters
+        {
+            get
+            {
+                Dictionary<string, object> res = IconParameters?.AllParameters ?? [];
+                if (IconFactoryParameters is Dictionary<string, object> factoryParameters) res.Merge(factoryParameters);
+                if (AllIconAttributes is Dictionary<string, object> allAttributes) res[nameof(Attributes)] = allAttributes;
+                return res;
+            }
+        }
+
+        /// <inheritdoc/>
         [Parameter]
-        public virtual string? SvgIconXml { get; set; }
+        public virtual IImageParameters? ActiveIconParameters { get; set; }
 
         /// <summary>
-        /// SVG icon CSS color (not a class name)
+        /// If to show the active icon
         /// </summary>
-        [Parameter]
-        public virtual string? SvgIconColor { get; set; }
+        public virtual bool ShowActiveIcon => ShowIcon;
+
+        /// <summary>
+        /// Icon CSS factory classes
+        /// </summary>
+        public virtual string? ActiveIconFactoryClass { get; }
+
+        /// <summary>
+        /// All icon CSS classes
+        /// </summary>
+        public string? AllActiveIconClass
+        {
+            get
+            {
+                CssBuilder builder = new();
+                if (ActiveIconFactoryClass is string factoryCss) builder.AddClass(factoryCss);
+                if (ActiveIconParameters?.Class is string css) builder.AddClass(css);
+                return builder.FinalClasses();
+            }
+        }
+
+        /// <summary>
+        /// Icon CSS factory style
+        /// </summary>
+        public virtual string? ActiveIconFactoryStyle { get; }
+
+        /// <summary>
+        /// All icon CSS style
+        /// </summary>
+        public string? AllActiveIconStyle
+        {
+            get
+            {
+                StyleBuilder builder = new();
+                if (ActiveIconFactoryStyle is string factoryCss) builder.AddStyle(factoryCss);
+                if (ActiveIconParameters?.Style is string style) builder.AddStyle(style);
+                return builder.FinalStyle();
+            }
+        }
+
+        /// <summary>
+        /// Icon component factory attributes
+        /// </summary>
+        public virtual Dictionary<string, object>? ActiveIconFactoryAttributes { get; }
+
+        /// <summary>
+        /// All icon attributes
+        /// </summary>
+        public Dictionary<string, object> AllActiveIconAttributes
+        {
+            get
+            {
+                Dictionary<string, object> res = ActiveIconFactoryAttributes ?? [];
+                if (ActiveIconParameters?.Attributes is Dictionary<string, object> attr) res.Merge(attr);
+                if ((Title is not null || Text is not null) && !res.ContainsKey("title")) res["title"] = Title ?? Text!;
+                return res;
+            }
+        }
+
+        /// <summary>
+        /// Icon component factory parameters
+        /// </summary>
+        public virtual Dictionary<string, object>? ActiveIconFactoryParameters
+        {
+            get
+            {
+                Dictionary<string, object> res = [];
+                res[nameof(TagName)] = "div";
+                res[nameof(Flex)] = FlexBoxTypes.Row;
+                if (GrowIcon) res[nameof(Grow)] = true;
+                if (AllActiveIconClass is string css) res[nameof(Class)] = css;
+                if (AllActiveIconStyle is string style) res[nameof(Style)] = style;
+                return res;
+            }
+        }
+
+        /// <summary>
+        /// All icon parameters
+        /// </summary>
+        public Dictionary<string, object> AllActiveIconParameters
+        {
+            get
+            {
+                Dictionary<string, object> res = ActiveIconParameters?.AllParameters ?? [];
+                if (ActiveIconFactoryParameters is Dictionary<string, object> factoryParameters) res.Merge(factoryParameters);
+                if (AllActiveIconAttributes is Dictionary<string, object> allAttributes) res[nameof(Attributes)] = allAttributes;
+                return res;
+            }
+        }
 
         /// <summary>
         /// If there's an icon
         /// </summary>
-        public virtual bool HasIcon => Icon is not null || SvgIconXml is not null;
+        public virtual bool HasIcon => IconParameters is not null && (IconParameters.Src is not null || IconParameters.SvgXml is not null);
+
+        /// <summary>
+        /// If there's an active icon
+        /// </summary>
+        public virtual bool HasActiveIcon => ActiveIconParameters is not null && (ActiveIconParameters.Src is not null || ActiveIconParameters.SvgXml is not null);
 
         /// <summary>
         /// If to grow the icon
@@ -280,14 +364,14 @@ namespace wan24.Blazor.Components
         public virtual bool Outline { get; set; }
 
         /// <summary>
-        /// Size
+        /// Button size
         /// </summary>
         [Parameter]
         public virtual Sizes Size { get; set; }
 
         /// <inheritdoc/>
         public override string? FactoryClass
-            => $"{base.FactoryClass} btn{(Color is not null ? $" btn-{(Outline ? "outline-" : string.Empty)}{BackGroundColor}" : string.Empty)}{(Size == Sizes.Regular ? string.Empty : $" btn-{Size.ToCss()}")}";
+            => $"{base.FactoryClass} btn{(BackGroundColor is not null ? $" btn-{(Outline ? "outline-" : string.Empty)}{BackGroundColor}" : string.Empty)}{(Size == Sizes.Regular ? string.Empty : $" btn-{Size.ToCss()}")}";
 
         /// <inheritdoc/>
         public override Dictionary<string, object>? FactoryAttributes
@@ -295,16 +379,10 @@ namespace wan24.Blazor.Components
             get
             {
                 Dictionary<string, object> res = base.FactoryAttributes ?? [];
-                if (TagName == "button") res["type"] = "button";
+                if (TagName == "button" && !res.ContainsKey("type")) res["type"] = "button";
+                if (Title is null && Text is not null && !ShowText) res["title"] = Text;
                 return res;
             }
-        }
-
-        /// <inheritdoc/>
-        protected override void OnParametersSet()
-        {
-            if (Text is not null) Title ??= Text;
-            base.OnParametersSet();
         }
     }
 }

@@ -1,18 +1,6 @@
 ﻿@inherits Box
+@implements IBodyTextParametersExt
 
 @{
     base.BuildRenderTree(__builder);
-}
-
-@code {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public BodyText() : base("p") => InlineFlex = true;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="tagName">HTML tag name</param>
-    protected BodyText(in string? tagName = null) : base(tagName ?? "p") => InlineFlex = true;
 }

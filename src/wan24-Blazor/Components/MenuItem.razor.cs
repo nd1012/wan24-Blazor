@@ -1,62 +1,69 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor.Components
 {
     /// <summary>
     /// Menu item
     /// </summary>
-    public partial class MenuItem : ClickButton, IMenuItemComponent
+    public partial class MenuItem : ClickButton, IMenuItemComponent, IMenuItemParametersExt
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public MenuItem() : base("div") => InlineFlex = false;
+        public MenuItem() : base("div")
+        {
+            InlineFlex = false;
+            BackGroundColor = null;
+        }
+
+        /// <inheritdoc/>
+        public override IParameters DefaultParameters => MenuItemParametersExt.Instance;
+
+        /// <inheritdoc/>
+        public override IParameters CurrentParameters => new MenuItemParametersExt(this);
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> ClickablePropertyNames => MenuItemParametersExt.Instance.ClickablePropertyNames;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> ObjectProperties => MenuItemParametersExt.Instance.ObjectProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> DesignProperties => MenuItemParametersExt.Instance.DesignProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> AccessabilityProperties => ClickButtonParametersExt.Instance.AccessabilityProperties;
 
         /// <inheritdoc/>
         [CascadingParameter]
-        public IMenu? Menu { get; set; }
+        public virtual IMenu? Menu { get; set; }
 
         /// <summary>
         /// Menu orientation
         /// </summary>
         [CascadingParameter]
-        public Orientations? Orientation { get; set; }
+        public virtual Orientations? Orientation { get; set; }
 
         /// <inheritdoc/>
         [CascadingParameter]
-        public IMenuItemComponentHost? Parent { get; set; }
+        public virtual IMenuItemComponentHost? Parent { get; set; }
 
         /// <inheritdoc/>
         [Parameter]
-#pragma warning disable BL0007 // Should be auto property
-        public override string? Text
-        {
-            get => Menu?.ShowText ?? true ? base.Text : null;
-            set => base.Text = value;
-        }
-#pragma warning restore BL0007 // Should be auto property
+        public virtual NavLinkMatch? ActiveMatch { get; set; }
 
         /// <inheritdoc/>
-        public override string? FactoryClass => "py-2";
+        public override bool ShowText => (Menu?.ShowText ?? true) && base.ShowText;
 
         /// <inheritdoc/>
-        public override Dictionary<string, object>? FactoryAttributes
-        {
-            get
-            {
-                Dictionary<string, object>? res = base.FactoryAttributes;
-                if (res is null || TagName != "button") return res;
-                res.Remove("type", out _);
-                return res;
-            }
-        }
+        public override string? TextFactoryClass
+            => $"{base.TextFactoryClass}{(TextColor is null ? string.Empty : $" link-{TextColor}{(TextEmphasis ? "-emphasis" : string.Empty)}")}";
 
         /// <inheritdoc/>
-        protected override void OnInitialized()
-        {
-            IconSize ??= Menu?.IconSize;
-            base.OnInitialized();
-        }
+        public override string? FactoryClass
+            => $"nav-link px-3 py-2{(Orientation.HasValue && Orientation.Value == Orientations.Vertical ? " flex-fill" : string.Empty)}";
 
         /// <inheritdoc/>
         protected override void OnParametersSet()
@@ -66,7 +73,7 @@ namespace wan24.Blazor.Components
                 Menu ??= Parent.Menu;
                 Parent.HostedComponent = this;
             }
-            base.OnInitialized();
+            base.OnParametersSet();
         }
     }
 }

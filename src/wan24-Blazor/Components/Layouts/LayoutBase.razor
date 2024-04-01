@@ -1,13 +1,19 @@
 ﻿@using BlazorPro.BlazorSize
 @inherits LayoutComponentBase
 @inject IResizeListener ResizeListener
+@inject IJSRuntime JsRuntime
 
 @if (Debug)
 {
     <!-- Start layout -->
 }
 <MediaQueryList>
+    <MediaQuery Media="screen and (prefers-color-scheme: dark)" MatchesChanged=@(new EventCallback<bool>(receiver: null, HandleColorModeChange)) />
     <CascadingValue Value="this">
+        @if(Theme is not null)
+        {
+            <Theme Apply=@Theme />
+        }
         @RenderContent()
     </CascadingValue>
 </MediaQueryList>

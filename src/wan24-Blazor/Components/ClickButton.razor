@@ -1,40 +1,20 @@
 ﻿@inherits Clickable
+@implements IClickButtonParametersExt
 
-<SectionContent SectionName=@UseBoxSection>
-    <GrowBox Flex=@Flex>
-        @if(HasIcon && ShowIcon)
+@if (IsVisible)
+{
+    <SectionContent SectionName=@UseBoxSection>
+        @if ((!IsActive && ShowIcon) || (IsActive && ShowActiveIcon))
         {
-            <Image 
-                Src=@Icon 
-                SvgXml=@SvgIconXml 
-                SvgColor=@SvgIconColor 
-                Title=@Text 
-                Size=@IconSize
-                Class=@AllIconClass 
-                Style=@AllIconStyle 
-                Attributes=@AllIconAttributes 
-                Grow=@GrowIcon 
-                @attributes=@AllIconParameters
-                />
+            <Image @attributes=@(IsActive && HasActiveIcon&&ShowActiveIcon?AllActiveIconParameters??AllIconParameters:AllIconParameters)/>
         }
-        @if(ShowText && Text is not null)
+        @if (!string.IsNullOrEmpty(Text) && (ShowText || ((!IsActive && !ShowIcon) || (IsActive && !ShowActiveIcon))))
         {
-            <BodyText
-                TagName="div" 
-                VAlign=@VerticalAligns.Center 
-                Class=@AllTextClass 
-                Style=@AllTextStyle 
-                Attributes=@AllTextAttributes 
-                Grow 
-                @attributes=@AllTextParameters
-                >
+            <Box @attributes=@AllTextParameters>
                 @Text
-            </BodyText>
+            </Box>
         }
         @ChildContent
-    </GrowBox>
-</SectionContent>
-
-@{
+    </SectionContent>
     base.BuildRenderTree(__builder);
 }

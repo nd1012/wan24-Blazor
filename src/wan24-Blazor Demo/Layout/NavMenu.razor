@@ -1,10 +1,10 @@
 ﻿@inherits ComponentBase
 
-<Bar Flex=@Orientation.ToFlexBoxType() IconSize="width:24px; height:24px;" ShowTextHorizontal="false">
-    <LeadText><strong>wan24-Blazor Demo</strong></LeadText>
-    <BarItem Href="" Text="Home" SvgIconXml=@Images.Icon_house.AsSvgXml() SvgIconColor="white" />
-    <BarItem Href="counter" Text="Counter" SvgIconXml=@Images.Icon_123.AsSvgXml() SvgIconColor="white" />
-    <BarItem Href="weather" Text="Weather" SvgIconXml=@Images.Icon_cloud.AsSvgXml() SvgIconColor="white" />
+<Bar Flex=@Orientation.ToFlexBoxType() BackGroundGradient ShowTextHorizontal="false">
+    <BarBranding Href="/" Text="wan24-Blazor Demo" />
+    <BarItem Href="/" Text="Home" IconParameters=@(new ImageParametersExt(){ SvgXml = Images.Icon_house.AsSvgXml() }) />
+    <BarItem Href="/counter" Text="Counter" IconParameters=@(new ImageParametersExt(){ SvgXml = Images.Icon_123.AsSvgXml() }) />
+    <BarItem Href="/weather" Text="Weather" IconParameters=@(new ImageParametersExt(){ SvgXml = Images.Icon_cloud.AsSvgXml() }) />
 </Bar>
 
 @code {

@@ -72,7 +72,7 @@ namespace wan24.Blazor
         public virtual async Task<bool> ClearEventListenersAsync(CancellationToken cancellationToken = default)
         {
             EnsureUndisposed(allowDisposing: true);
-            EnsureNode();
+            if (!EnsureNode(throwOnError: false) || Gateway is null) return false;
             EventHandlers.Clear();
             Elements.TryRemove(ID!, out _);
             return await Gateway.Gateway.InvokeAsync<bool>("clearEventListeners", cancellationToken, [ID]).DynamicContext();

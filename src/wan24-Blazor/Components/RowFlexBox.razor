@@ -1,18 +1,6 @@
 ﻿@inherits Box
+@implements IRowFlexBoxParametersExt
 
 @{
     base.BuildRenderTree(__builder);
-}
-
-@code {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public RowFlexBox() : base() => Flex = FlexBoxTypes.Row;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="tagName"></param>
-    protected RowFlexBox(in string tagName) : base(tagName) => Flex = FlexBoxTypes.Row;
 }

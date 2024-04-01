@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor.Components
 {
@@ -8,7 +9,7 @@ namespace wan24.Blazor.Components
     /// <remarks>
     /// Constructor
     /// </remarks>
-    public abstract partial class ParentComponentBase() : BlazorComponentBase(), IServeChildContent
+    public abstract partial class ParentComponentBase() : BlazorComponentBase(), IParentComponent, IParentComponentParameters
     {
         /// <inheritdoc/>
         [Parameter]

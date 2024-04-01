@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using static wan24.Blazor.BlazorEnv;
+﻿using static wan24.Blazor.BlazorEnv;
 
 namespace wan24.Blazor.Components.Layouts
 {
@@ -11,19 +10,13 @@ namespace wan24.Blazor.Components.Layouts
         /// </summary>
         public static object? TopHeaderSection { get; set; }
 
-        /// <summary>
-        /// Top header component type (must be a <see cref="ComponentBase"/> with a parameterless constructor)
-        /// </summary>
+        /// <inheritdoc/>
         public Type? TopHeader { get; protected set; }
 
-        /// <summary>
-        /// Top header parameters
-        /// </summary>
+        /// <inheritdoc/>
         public Dictionary<string, object>? TopHeaderParameters { get; protected set; }
 
-        /// <summary>
-        /// Display the top header?
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool DisplayTopHeader => !((TopHeader is null && TopHeaderSection is null) ||
             (IsLargeScreen &&
                 (
@@ -38,29 +31,19 @@ namespace wan24.Blazor.Components.Layouts
                 )
             ));
 
-        /// <summary>
-        /// Top header HTML tag name
-        /// </summary>
+        /// <inheritdoc/>
         public string TopHeaderTag { get; protected set; } = "header";
 
-        /// <summary>
-        /// Show the top header on a landscape screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowTopHeaderOnLandscape { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the top header on a small landscape screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowTopHeaderOnSmallLandscape { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the top header on a portrait screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowTopHeaderOnPortrait { get; protected set; } = true;
 
-        /// <summary>
-        /// Show the top header on a small portrait screen?
-        /// </summary>
+        /// <inheritdoc/>
         public bool ShowTopHeaderOnSmallPortrait { get; protected set; } = true;
     }
 }

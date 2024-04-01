@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Components.Web;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor
 {
@@ -8,10 +11,6 @@ namespace wan24.Blazor
     public interface IMenuItem : IComponent
     {
         /// <summary>
-        /// DOM ID
-        /// </summary>
-        string? Id { get; }
-        /// <summary>
         /// Menu
         /// </summary>
         IMenu? Menu { get; }
@@ -20,72 +19,48 @@ namespace wan24.Blazor
         /// </summary>
         IMenuParentItem? Parent { get; }
         /// <summary>
+        /// DOM ID
+        /// </summary>
+        string? Id { get; }
+        /// <summary>
         /// Click target URI
         /// </summary>
         string? Href { get; }
         /// <summary>
         /// Click handler
         /// </summary>
-        Delegate? ClickHandler { get; }
+        EventCallback<MouseEventArgs>? ClickHandler { get; }
         /// <summary>
         /// Navigation target
         /// </summary>
         string? Target { get; }
         /// <summary>
+        /// Active menu item <see cref="Href"/> match logic to apply (default is the menu setting from <see cref="IMenu.ActiveMatch"/> or <see cref="NavLinkMatch.All"/>)
+        /// </summary>
+        NavLinkMatch? ActiveMatch { get; }
+        /// <summary>
         /// Text
         /// </summary>
         string? Text { get; }
         /// <summary>
-        /// Text size
+        /// Icon parameters
         /// </summary>
-        Sizes TextSize { get; }
+        IImageParameters? IconParameters { get; }
         /// <summary>
-        /// Text CSS classes
+        /// Active parameters
         /// </summary>
-        string? TextClass { get; set; }
+        IImageParameters? ActiveIconParameters { get; }
         /// <summary>
-        /// Text CSS style
+        /// Text parameters
         /// </summary>
-        string? TextStyle { get; set; }
+        IBodyTextParameters? TextParameters { get; }
         /// <summary>
-        /// Text attributes
+        /// Get/set if this is an active item
         /// </summary>
-        Dictionary<string, object>? TextAttributes { get; set; }
+        bool IsActiveItem { get; set; }
         /// <summary>
-        /// Text component paraneters
+        /// Update the component (rerender)
         /// </summary>
-        Dictionary<string, object>? TextParameters { get; set; }
-        /// <summary>
-        /// Icon URI
-        /// </summary>
-        string? Icon { get; }
-        /// <summary>
-        /// Icon size CSS
-        /// </summary>
-        string? IconSize { get; }
-        /// <summary>
-        /// Icon CSS classes
-        /// </summary>
-        string? IconClass { get; set; }
-        /// <summary>
-        /// Icon CSS style
-        /// </summary>
-        string? IconStyle { get; set; }
-        /// <summary>
-        /// Icon attributes
-        /// </summary>
-        Dictionary<string, object>? IconAttributes { get; set; }
-        /// <summary>
-        /// Icon component paraneters
-        /// </summary>
-        Dictionary<string, object>? IconParameters { get; set; }
-        /// <summary>
-        /// SVG icon XML
-        /// </summary>
-        string? SvgIconXml { get; }
-        /// <summary>
-        /// SVG icon CSS color (not a class name)
-        /// </summary>
-        string? SvgIconColor { get; }
+        void Update();
     }
 }

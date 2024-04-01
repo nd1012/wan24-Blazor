@@ -1,15 +1,13 @@
 ﻿@page "/weather"
 @inject HttpClient Http
 
-<PageTitle>Weather</PageTitle>
+<PageHeading>Weather</PageHeading>
 
-<h1>Weather</h1>
-
-<p>This component demonstrates fetching data from the server.</p>
+<BodyText>This component demonstrates fetching data from the server.</BodyText>
 
 @if (forecasts == null)
 {
-    <p><em>Loading...</em></p>
+    <BodyText FontStyle="FontStyles.Italic">Loading...</BodyText>
 }
 else
 {

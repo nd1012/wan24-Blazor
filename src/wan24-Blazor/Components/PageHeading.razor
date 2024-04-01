@@ -1,0 +1,7 @@
+﻿@inherits ParentComponentBase
+
+@if(IsVisible)
+{
+    <PageTitle>@ChildContent</PageTitle>
+    <h1 @attributes=@AdditionalAttributes>@ChildContent</h1>
+}

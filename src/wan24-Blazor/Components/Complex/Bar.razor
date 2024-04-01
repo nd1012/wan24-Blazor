@@ -1,11 +1,13 @@
-﻿@inherits Box
+﻿@inherits DisposableBoxBase
+@implements IBarParametersExt
+@inject NavigationManager Navigation
 
-<SectionContent SectionName=@UseBoxSection>
-    <CascadingValue Value="this">
-        @ChildContent
-    </CascadingValue>
-</SectionContent>
-
-@{
+@if (IsVisible)
+{
+    <SectionContent SectionName=@UseBoxSection>
+        <CascadingValue Value="this">
+            @ChildContent
+        </CascadingValue>
+    </SectionContent>
     base.BuildRenderTree(__builder);
 }

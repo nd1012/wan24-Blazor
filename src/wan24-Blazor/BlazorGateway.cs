@@ -13,11 +13,33 @@ namespace wan24.Blazor
         /// </summary>
         public const string GATEWAY_URI =
 #if !RELEASE
-            "./_content/wan24.Blazor/wwwroot/js/transpiled/blazorGateway.js"
+            "./_content/wan24-Blazor/js/transpiled/blazorGateway.js"
 #else
-            "./_content/wan24.Blazor/wwwroot/js/minified/blazorGateway.min.js"
+            "./_content/wan24-Blazor/js/minified/blazorGateway.min.js"
 #endif
             ;
+
+        /// <summary>
+        /// Static constructor
+        /// </summary>
+        static BlazorGateway()
+        {
+            BlazorEnv.OnColorModeChanged += async () =>
+            {
+                if (Instance is null) return;
+                try
+                {
+                    DomElement html = (await Instance.GetElementsByTagNameAsync("html").DynamicContext()).FirstOrDefault()
+                        ?? throw new InvalidProgramException("Missing HTML element");
+                    await using (html.DynamicContext())
+                        await html.SetAttributeAsync("data-bs-theme", BlazorEnv.LightMode ? "light" : "dark").DynamicContext();
+                }
+                catch(Exception ex)
+                {
+                    ErrorHandling.Handle(new("Failed to change HTML attribute on color mode change", ex));
+                }
+            };
+        }
 
         /// <summary>
         /// Constructor
@@ -57,7 +79,7 @@ namespace wan24.Blazor
         /// </summary>
         /// <param name="element">Element</param>
         /// <returns>Element</returns>
-        protected DomElement SetGateway(in DomElement element)
+        protected virtual DomElement SetGateway(in DomElement element)
         {
             EnsureUndisposed();
             return element.SetGateway(this);
@@ -82,10 +104,11 @@ namespace wan24.Blazor
         /// </summary>
         /// <param name="runtime">Runtime</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>Blazor gateway (don't forget to dispose!)</returns>
+        /// <returns>Blazor gateway</returns>
         public static async Task<BlazorGateway> CreateAsync(IJSRuntime runtime, CancellationToken cancellationToken = default)
         {
-            IJSObjectReference gateway = await runtime.InvokeAsync<IJSObjectReference>(GATEWAY_URI, cancellationToken).DynamicContext();
+            if (Instance is not null) return Instance;
+            IJSObjectReference gateway = await runtime.InvokeAsync<IJSObjectReference>("import", cancellationToken, GATEWAY_URI).DynamicContext();
             try
             {
                 return await new BlazorGateway(gateway).InitAsync(cancellationToken).DynamicContext();

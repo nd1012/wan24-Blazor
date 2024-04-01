@@ -1,56 +1,68 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using wan24.Core;
+using wan24.Blazor.Parameters;
 
 namespace wan24.Blazor.Components
 {
     /// <summary>
     /// Clickable
     /// </summary>
-    public partial class Clickable : Box
+    public partial class Clickable : Box, IClickableParametersExt
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public Clickable() : base("div") => InlineFlex = true;
+        public Clickable() : this("div") { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="tagName">HTML tag name</param>
-        protected Clickable(in string tagName) : base(tagName) => InlineFlex = true;
+        protected Clickable(in string tagName) : base(tagName)
+        {
+            Id = Helper.CreateElementId();
+            InlineFlex = true;
+        }
 
-        /// <summary>
-        /// Target URI
-        /// </summary>
+        /// <inheritdoc/>
+        public override IParameters DefaultParameters => ClickableParametersExt.Instance;
+
+        /// <inheritdoc/>
+        public override IParameters CurrentParameters => new ClickableParametersExt(this);
+
+        /// <inheritdoc/>
+        public virtual IEnumerable<string> ClickablePropertyNames => ClickableParametersExt.Instance.ClickablePropertyNames;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> ObjectProperties => ClickableParametersExt.Instance.ObjectProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> DesignProperties => ClickableParametersExt.Instance.DesignProperties;
+
+        /// <inheritdoc/>
+        public override IEnumerable<string> AccessabilityProperties => ClickableParametersExt.Instance.AccessabilityProperties;
+
+        /// <inheritdoc/>
         [Parameter]
-        public string Href { get; set; } = "#";
+        public virtual string Href { get; set; } = "#";
 
-        /// <summary>
-        /// Click handler
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
         public EventCallback<MouseEventArgs>? ClickHandler { get; set; }
 
-        /// <summary>
-        /// Used click handler
-        /// </summary>
+        /// <inheritdoc/>
         public EventCallback<MouseEventArgs> ClickHandlerDelegate => ClickHandler ?? new(receiver: null, @delegate: OnClick);
 
-        /// <summary>
-        /// Target name
-        /// </summary>
+        /// <inheritdoc/>
         [Parameter]
-        public string Target { get; set; } = "_self";
-
-        /// <summary>
-        /// If a load is forced
-        /// </summary>
-        [Parameter]
-        public bool ForceLoad { get; set; }
+        public virtual string Target { get; set; } = "_self";
 
         /// <inheritdoc/>
-        public override string? FactoryStyle => $"{base.FactoryStyle};cursor: pointer;";
+        [Parameter]
+        public virtual bool ForceLoad { get; set; }
+
+        /// <inheritdoc/>
+        public override string? FactoryStyle => $"{base.FactoryStyle};cursor:pointer;";
 
         /// <inheritdoc/>
         public override Dictionary<string, object>? FactoryAttributes
@@ -58,7 +70,7 @@ namespace wan24.Blazor.Components
             get
             {
                 Dictionary<string, object> res = base.FactoryAttributes ?? [];
-                res["target"] = Target;
+                if (TagName == "a") res["target"] = Target;
                 res["onclick"] = ClickHandlerDelegate;
                 return res;
             }

@@ -1,12 +1,6 @@
 ﻿@inherits Link
+@implements IHoverLinkParametersExt
 
 @{
     base.BuildRenderTree(__builder);
-}
-
-@code {
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    public HoverLink() : base() => Hover = true;
 }
