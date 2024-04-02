@@ -659,10 +659,10 @@ namespace wan24.Blazor
             /// </summary>
             /// <param name="name">Name</param>
             /// <returns>Color</returns>
-            public static CssRgbA? GetByName(string name)
+            public static CssRgbA GetByName(string name)
             {
                 string? key = All.Keys.FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
-                return key is null ? null : All[key];
+                return key is null ? default : All[key];
             }
 
             /// <summary>
@@ -671,10 +671,10 @@ namespace wan24.Blazor
             /// <param name="name">Name</param>
             /// <param name="result">Result</param>
             /// <returns>If succeed</returns>
-            public static bool TryGetByName(string name, [NotNullWhen(returnValue:true)] out CssRgbA? result)
+            public static bool TryGetByName(string name, out CssRgbA result)
             {
                 string? key = All.Keys.FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
-                result = key is null ? null : All[key];
+                result = key is null ? default : All[key];
                 return key is not null;
             }
 

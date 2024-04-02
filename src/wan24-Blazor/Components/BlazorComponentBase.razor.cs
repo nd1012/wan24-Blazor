@@ -1,7 +1,6 @@
 ﻿using BlazorComponentUtilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using System.Diagnostics;
 using wan24.Blazor.Parameters;
 using wan24.Core;
 
@@ -13,11 +12,17 @@ namespace wan24.Blazor.Components
     /// <summary>
     /// Base class for a Blazor component
     /// </summary>
-    /// <remarks>
-    /// Constructor
-    /// </remarks>
-    public abstract partial class BlazorComponentBase() : ComponentBase(), IBlazorComponent
+    public abstract partial class BlazorComponentBase : ComponentBase, IBlazorComponent
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        protected BlazorComponentBase() : base()
+        {
+            if (ComponentDefaultParameters.Get(GetType()) is IParameters parameters)
+                parameters.ApplyToExcluding(this);
+        }
+
         /// <inheritdoc/>
         public virtual Dictionary<string, object> AllParameters => CurrentParameters.AllParameters;
 
@@ -61,6 +66,7 @@ namespace wan24.Blazor.Components
                 // Factory CSS classes
                 if (FactoryClass is string factoryClass) builder.AddClass(factoryClass);
                 if (FactoryAttributes is Dictionary<string, object> factoryAttributes) builder.AddClassFromAttributes(factoryAttributes);
+                if (ComponentFactoryDefaults.Get(GetType())?.Class is string addFactoryClass) builder.AddClass(addFactoryClass);
 
                 // Flex box
                 if (Grow) builder.AddClass("flex-grow-1");
@@ -233,6 +239,7 @@ namespace wan24.Blazor.Components
                 StyleBuilder builder = new();
                 if (FactoryStyle is string factoryStyle) builder.AddStyle(factoryStyle);
                 if (FactoryAttributes is Dictionary<string, object> factoryAttributes) builder.AddStyleFromAttributes(factoryAttributes);
+                if (ComponentFactoryDefaults.Get(GetType())?.Style is string addFactoryStyle) builder.AddStyle(addFactoryStyle);
                 if (Color is not null) builder.AddStyle($"color: {Color};");
                 if (TextOpacity != Opacities.Op100) builder.AddStyle(TextOpacity switch
                 {
@@ -258,10 +265,11 @@ namespace wan24.Blazor.Components
             get
             {
                 Dictionary<string, object>? factoryAttributes = FactoryAttributes,
+                    addFactoryAttributes = ComponentFactoryDefaults.Get(GetType())?.Attributes,
                     attributes = Attributes;
                 bool visible = IsVisible,
                     enabled = IsEnabled;
-                int capacity = (attributes?.Count ?? 0) + (factoryAttributes?.Count ?? 0);
+                int capacity = (attributes?.Count ?? 0) + (factoryAttributes?.Count ?? 0) + (addFactoryAttributes?.Count ?? 0);
                 if (Id is not null) capacity++;
                 if (Title is not null) capacity++;
                 string? classNames = ClassAttribute,
@@ -273,6 +281,7 @@ namespace wan24.Blazor.Components
                 if (ForcedColorMode.HasValue) capacity++;
                 Dictionary<string, object> res = new(capacity);
                 if (factoryAttributes is not null) res.Merge(factoryAttributes);
+                if (addFactoryAttributes is not null) res.Merge(addFactoryAttributes);
                 if (Id is not null) res["id"] = Id;
                 if (Title is not null) res["title"] = Title;
                 if (classNames is not null) res["class"] = classNames;

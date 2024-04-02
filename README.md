@@ -333,6 +333,17 @@ Example:
 }
 ```
 
+#### The resulting layout
+
+Since we didn't change the pages to use the `wan24-Blazor` base components 
+yet, we'll only get a responsive layout with an orange tone as primary color. 
+The menu item text won't be visible on a portrait screen, and also the sidebar 
+will be displayed at the bottom of the layout. When you switch your browser 
+(your system settings) to dark/light mode, the colors of the layout should be 
+switched, too. When you view the app on a small (smartphone) landscape screen, 
+the sidebar won't be shown at all, because it's assumed that the user want to 
+use all the space available for content display.
+
 ### Components
 
 #### Layout

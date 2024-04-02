@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Runtime.InteropServices;
 using wan24.Core;
 
 namespace wan24.Blazor
@@ -6,7 +6,8 @@ namespace wan24.Blazor
     /// <summary>
     /// CSS RGBA
     /// </summary>
-    public sealed record class CssRgbA
+    [StructLayout(LayoutKind.Auto)]
+    public readonly record struct CssRgbA
     {
         /// <summary>
         /// Inherit value
@@ -16,36 +17,71 @@ namespace wan24.Blazor
         /// <summary>
         /// Inherited
         /// </summary>
-        public static readonly CssRgbA Inherited = new() { Inherit = true };
-
+        public static readonly CssRgbA Inherited = new(inherit: true);
         /// <summary>
-        /// Constructor
+        /// Black
         /// </summary>
-        public CssRgbA() { }
-
+        public static readonly CssRgbA Black = Colors.HTML.Black;
         /// <summary>
-        /// Constructor
+        /// White
         /// </summary>
-        public CssRgbA(in string name, in RgbA rgb)
-        {
-            RGBA = rgb;
-            ColorName = name;
-        }
+        public static readonly CssRgbA White = Colors.HTML.White;
 
         /// <summary>
         /// RGBA
         /// </summary>
-        public RgbA RGBA { get; init; }
-
-        /// <summary>
-        /// HTML color name
-        /// </summary>
-        public string? ColorName { get; init; }
-
+        public readonly RgbA RGBA;
         /// <summary>
         /// If inherited
         /// </summary>
-        public bool Inherit { get; init; }
+        public readonly bool Inherit;
+        /// <summary>
+        /// HTML color name (if not <see langword="null"/>, <see cref="RGBA"/> has the RGB color value of the HTML color)
+        /// </summary>
+        public readonly string? ColorName;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public CssRgbA()
+        {
+            RGBA = RgbA.Black;
+            ColorName = Colors.HTML.Black.ColorName;
+            Inherit = false;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="rgb">RGBA</param>
+        public CssRgbA(in RgbA rgb)
+        {
+            RGBA = rgb;
+            ColorName = null;
+            Inherit = false;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        private CssRgbA(in bool inherit)
+        {
+            RGBA = default;
+            ColorName = null;
+            Inherit = inherit;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name">HTML color name</param>
+        /// <param name="rgb">RGBA</param>
+        internal CssRgbA(in string name, in RgbA rgb)
+        {
+            RGBA = rgb;
+            ColorName = name;
+            Inherit = false;
+        }
 
         /// <summary>
         /// Value type
@@ -61,7 +97,7 @@ namespace wan24.Blazor
         }
 
         /// <inheritdoc/>
-        public override string ToString() => Inherit ? INHERIT_VALUE : ColorName ?? RGBA.ToCssString();
+        public override string ToString() => Inherit ? INHERIT_VALUE : ColorName ?? (RGBA.Alpha == 1 ? RGBA.RGB.ToHtmlString() : RGBA.ToCssString());
 
         /// <summary>
         /// Cast as <see cref="RgbA"/>
@@ -85,13 +121,13 @@ namespace wan24.Blazor
         /// Cast from <see cref="RgbA"/>
         /// </summary>
         /// <param name="value"><see cref="RgbA"/></param>
-        public static implicit operator CssRgbA(in RgbA value) => new() { RGBA = value };
+        public static implicit operator CssRgbA(in RgbA value) => new(value);
 
         /// <summary>
         /// Cast from <see cref="Rgb"/>
         /// </summary>
         /// <param name="value"><see cref="Rgb"/></param>
-        public static implicit operator CssRgbA(in Rgb value) => new() { RGBA = new(value) };
+        public static implicit operator CssRgbA(in Rgb value) => new(new RgbA(value));
 
         /// <summary>
         /// Cast from <see cref="string"/>
@@ -106,10 +142,11 @@ namespace wan24.Blazor
         /// <returns><see cref="CssRgbA"/></returns>
         public static CssRgbA Parse(in string str)
         {
-            if (str == INHERIT_VALUE) return new() { Inherit = true };
-            else if (RgbA.RX_CSS.IsMatch(str)) return new() { RGBA = RgbA.Parse(str) };
-            else if (Rgb.RX_CSS.IsMatch(str)) return new() { RGBA = new(Rgb.Parse(str)) };
-            return new() { ColorName = str };
+            if (str.Equals(INHERIT_VALUE, StringComparison.OrdinalIgnoreCase)) return Inherited;
+            else if (Colors.HTML.TryGetByName(str, out CssRgbA res)) return res;
+            else if (RgbA.RX_CSS.IsMatch(str)) return new(RgbA.Parse(str));
+            else if (Rgb.RX_CSS.IsMatch(str)) return new(new RgbA(Rgb.Parse(str)));
+            throw new ArgumentException("Invalid color value", nameof(str));
         }
 
         /// <summary>
@@ -118,32 +155,33 @@ namespace wan24.Blazor
         /// <param name="str">String</param>
         /// <param name="result">Result</param>
         /// <returns>If succeed (should always succeed)</returns>
-        public static bool TryParse(in string str, [NotNullWhen(returnValue: true)] out CssRgbA? result)
+        public static bool TryParse(in string str, out CssRgbA result)
         {
-            if (str == INHERIT_VALUE)
+            if (str.Equals(INHERIT_VALUE, StringComparison.OrdinalIgnoreCase))
             {
-                result = new() { Inherit = true };
+                result = Inherited;
                 return true;
             }
             try
             {
+                if (Colors.HTML.TryGetByName(str, out result)) return true;
                 if (RgbA.TryParse(str, out RgbA rgba))
                 {
-                    result = new() { RGBA = rgba };
+                    result = new(rgba);
                     return true;
                 }
                 if (Rgb.TryParse(str, out Rgb rgb))
                 {
-                    result = new() { RGBA = new(rgb) };
+                    result = new(new RgbA(rgb));
                     return true;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (Logging.Debug) Logging.WriteDebug($"{typeof(CssRgbA)} string parsing failed with an exception: ({ex.GetType()}) {ex.Message}");
             }
-            result = new() { ColorName = str };
-            return true;
+            result = default;
+            return false;
         }
     }
 }
