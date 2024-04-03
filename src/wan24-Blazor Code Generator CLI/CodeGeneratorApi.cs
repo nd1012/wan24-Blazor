@@ -24,7 +24,7 @@ namespace wan24.Blazor
         {
             folder ??= "../../../../../bootstrap-icons-1.11.3";
             template ??= "Images.cs";
-            output ??= "../../../../wan24-Blazor-Shared-Core/Images.cs";
+            output ??= "../../../../wan24-Blazor-Shared/Images.cs";
             string[] outputTemplate = (await File.ReadAllTextAsync(template).DynamicContext()).Replace("\r", string.Empty).Split("#define CONTENT\n", 2);
             if (outputTemplate.Length != 2) throw new InvalidDataException("Invalid template");
             FileStream outputFile = FsHelper.CreateFileStream(output, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, overwrite: true);
@@ -50,7 +50,7 @@ namespace wan24.Blazor
                         sb.AppendLine();
                     }
                     sb.AppendLine("\t\t/// <summary>");
-                    sb.AppendLine($"\t\t/// {name}");
+                    sb.AppendLine($"\t\t/// {name} ({Path.GetFileName(fn)})");
                     sb.AppendLine("\t\t/// </summary>");
                     sb.AppendLine($"\t\tpublic static string Icon_{name.Replace('-', '_')} {{ get; }} = \"data:image/svg+xml;base64, {Convert.ToBase64String(svg.GetBytes())}\";");
                     await writer.WriteAsync(sb.ToString()).DynamicContext();

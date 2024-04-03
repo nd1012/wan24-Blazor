@@ -70,6 +70,14 @@ namespace wan24.Blazor.Components
 
         /// <inheritdoc/>
         [Parameter]
+        public virtual BackGroundParameters? BackGround { get; set; }
+
+        /// <inheritdoc/>
+        [Parameter]
+        public virtual BlendModes MixBlendMode { get; set; }
+
+        /// <inheritdoc/>
+        [Parameter]
         public virtual string? BackGroundColor { get; set; }
 
         /// <inheritdoc/>

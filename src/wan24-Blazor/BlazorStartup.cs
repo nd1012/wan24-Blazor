@@ -15,7 +15,7 @@ namespace wan24.Blazor
         /// <param name="guiType">GUI type</param>
         /// <param name="build">Build type</param>
         /// <param name="services">Services</param>
-        public static void Start(in GuiType guiType, in BuildTypes build, in IServiceCollection services)
+        public static void Start(in GuiTypes guiType, in BuildTypes build, in IServiceCollection services)
         {
             Startup.Start(guiType, build);
             SyncStart(services);
@@ -28,7 +28,7 @@ namespace wan24.Blazor
         /// <param name="build">Build type</param>
         /// <param name="services">Services</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        public static async Task StartAsync(GuiType guiType, BuildTypes build, IServiceCollection services, CancellationToken cancellationToken = default)
+        public static async Task StartAsync(GuiTypes guiType, BuildTypes build, IServiceCollection services, CancellationToken cancellationToken = default)
         {
             await Startup.StartAsync(guiType, build, cancellationToken).DynamicContext();
             SyncStart(services);

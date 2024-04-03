@@ -24,6 +24,9 @@ namespace wan24.Blazor.Components
         }
 
         /// <inheritdoc/>
+        public bool DidRender { get; protected set; }
+
+        /// <inheritdoc/>
         public virtual Dictionary<string, object> AllParameters => CurrentParameters.AllParameters;
 
         /// <inheritdoc/>
@@ -240,16 +243,18 @@ namespace wan24.Blazor.Components
                 if (FactoryStyle is string factoryStyle) builder.AddStyle(factoryStyle);
                 if (FactoryAttributes is Dictionary<string, object> factoryAttributes) builder.AddStyleFromAttributes(factoryAttributes);
                 if (ComponentFactoryDefaults.Get(GetType())?.Style is string addFactoryStyle) builder.AddStyle(addFactoryStyle);
-                if (Color is not null) builder.AddStyle($"color: {Color};");
+                if (BackGround is not null) builder.AddStyle(BackGround.ToString());
+                if (MixBlendMode != BlendModes.None) builder.AddStyle($"background-blend-mode:{string.Join(",", MixBlendMode.GetBlendModes())};");
+                if (Color is not null) builder.AddStyle($"color:{Color};");
                 if (TextOpacity != Opacities.Op100) builder.AddStyle(TextOpacity switch
                 {
-                    Opacities.Op75 => "--bs-text-opacity: .75;",
-                    Opacities.Op50 => "--bs-text-opacity: .5;",
-                    Opacities.Op25 => "--bs-text-opacity: .25;",
-                    Opacities.Op10 => "--bs-text-opacity: .1;",
+                    Opacities.Op75 => "--bs-text-opacity:.75;",
+                    Opacities.Op50 => "--bs-text-opacity:.5;",
+                    Opacities.Op25 => "--bs-text-opacity:.25;",
+                    Opacities.Op10 => "--bs-text-opacity:.1;",
                     _ => throw new InvalidProgramException(TextOpacity.ToString())
                 });
-                if (ZIndex.HasValue) builder.AddStyle($"z-index: {ZIndex};");
+                if (ZIndex.HasValue) builder.AddStyle($"z-index:{ZIndex};");
                 if (Style is not null) builder.AddStyle(Style);
                 if (Attributes is Dictionary<string, object> attributes) builder.AddStyleFromAttributes(attributes);
                 return builder.FinalStyle();
@@ -319,6 +324,13 @@ namespace wan24.Blazor.Components
         /// </summary>
         /// <param name="e">Arguments</param>
         protected virtual void OnClick(MouseEventArgs e) { }
+
+        /// <inheritdoc/>
+        protected override void OnAfterRender(bool firstRender)
+        {
+            base.OnAfterRender(firstRender);
+            DidRender = true;
+        }
 
         /// <inheritdoc/>
         protected override void OnParametersSet()

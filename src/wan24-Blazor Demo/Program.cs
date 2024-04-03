@@ -18,7 +18,7 @@ build |= BuildTypes.Release;
 #else
 build |= BuildTypes.Debug;
 #endif
-await BlazorStartup.StartAsync(GuiType.WASM, build, builder.Services).DynamicContext();
+await BlazorStartup.StartAsync(GuiTypes.WASM, build, builder.Services).DynamicContext();
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");

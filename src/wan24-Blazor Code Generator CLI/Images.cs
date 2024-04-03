@@ -1,31 +1,34 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Frozen;
+using System.Diagnostics.CodeAnalysis;
 using wan24.Blazor.Parameters;
 using wan24.Core;
 
 namespace wan24.Blazor
 {
     /// <summary>
-    /// Images (SVG)
+    /// Images (Bootstrap Icons SVG files; property name is the sanitized filename with the <c>Icon_</c> prefix and without extension)
     /// </summary>
     public static class Images
     {
         /// <summary>
-        /// All image properties
+        /// All image properties (key is the filename with the <c>Icon_</c> prefix and without extension)
         /// </summary>
-        private static readonly Dictionary<string, PropertyInfoExt> All;
+        private static readonly FrozenDictionary<string, PropertyInfoExt> All;
 
         /// <summary>
         /// Constructor
         /// </summary>
         static Images()
         {
-            All = [];
-            foreach (PropertyInfoExt pi in typeof(Images).GetPropertiesCached())
-                All[pi.Name] = pi;
+            PropertyInfoExt[] properties = typeof(Images).GetPropertiesCached();
+            int len = properties.Length;
+            Dictionary<string, PropertyInfoExt> images = new(len);
+            for (int i = 0; i < len; images[properties[i].Name] = properties[i], i++) ;
+            All = images.ToFrozenDictionary();
         }
 
         /// <summary>
-        /// All image names
+        /// All image property names
         /// </summary>
         public static IEnumerable<string> Names => All.Keys;
 

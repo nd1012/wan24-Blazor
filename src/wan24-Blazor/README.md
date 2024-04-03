@@ -8,7 +8,7 @@ with Bootstrap 5 support for Blazor clients (not server side rendering).
 - Layout components
 - Several inheritable components
 - Bootstrap Icons version 1.11.3 SVG images (as generated C# code, from the 
-referenced `wan24-Blazor-Shared-Core` NuGet package)
+referenced `wan24-Blazor-Shared` NuGet package)
 - A bunch of validation attributes
 - DOM manipulation helper
 - File download helper (for sending a computed file download to the client 
@@ -21,7 +21,7 @@ WebAssembly and JavaScript
 - Bootstrap Icons SVG files (the SVG XML accessable using the `Images` class 
 only)
 - The Bootstrap Icons `bootstrap.svg` file was excluded completely (also from 
-the generated C# code in the `wan24-Blazor-Shared-Core` NuGet package)
+the generated C# code in the `wan24-Blazor-Shared` NuGet package)
 - Bootstrap 5 JS and CSS (reference the 
 [`wan24-Blazor-Bootstrap` NuGet package](https://www.nuget.org/packages/wan24-Blazor-Bootstrap/))
 - Bootstrap Icons fonts and CSS (reference the 
@@ -41,10 +41,8 @@ This library is available as a
 There's a library with shared types which you may use at the server side, for 
 example: 
 [`wan24-Blazor-Shared` NuGet package](https://www.nuget.org/packages/wan24-Blazor-Shared/)
-This library references the 
-[`wan24-Blazor-Shared-Core` NuGet package](https://www.nuget.org/packages/wan24-Blazor-Shared-Core/), 
-which doesn't reference any ASP.NET Core dependencies ('cause it's contents 
-doesn't need Razor or Blazor in order to be able to work).
+This library doesn't reference any ASP.NET Core dependencies ('cause it's 
+contents doesn't need Razor or Blazor in order to be able to work).
 
 ### Pre-requirements
 
@@ -71,7 +69,7 @@ build |= BuildType.Release;
 build |= BuildType.Debug;
 #endif
 await wan24.Blazor.Startup.StartAsync(
-	wan24.Blazor.GuiType.WASM, 
+	wan24.Blazor.GuiTypes.WASM, 
 	build, 
 	builder.Services
 	);
@@ -111,7 +109,7 @@ build |= wan24.Blazor.BuildType.Release;
 build |= wan24.Blazor.BuildType.Debug;
 #endif
 wan24.Blazor.Startup.Start(
-	wan24.Blazor.GuiType.MAUI, 
+	wan24.Blazor.GuiTypes.MAUI, 
 	build, 
 	builder.Services
 	);
@@ -140,7 +138,6 @@ Optional imports which may be helpful:
 // Blazor tools
 @using static wan24.Blazor.BlazorEnv;// WebAssembly environment
 @using static wan24.Blazor.BlazorTools;// Blazor tools
-@using static wan24.Blazor.BlazorToolsShared;// Shared blazor tools
 @using static wan24.Blazor.GuiEnv;// GUI enironment
 @using static wan24.Blazor.Helper;// Useful helper methods
 @using static wan24.Blazor.ToastLogger;// Toast message helper
@@ -261,13 +258,88 @@ Example:
 }
 
 @code {
-	public MainLayout() : base()
-	{
-		SideBar = typeof(NavMenu);
-		// Any additional setup
-	}
+    public MainLayout() : base()
+    {
+        // Configure the demo theme
+        Theme = Bs5Theme.Demo;
+        // Configure the sidebar
+        Sidebar = typeof(NavMenu);
+        ShowSidebarOnSmallLandscape = false;
+        // Configure the body
+        BodyParameters = new()
+        {
+            {nameof(Content.BackGroundGradient), true}
+        };
+        // Handle color mode changes (dark/light mode)
+        HandleColorModeChange();
+        ColorModeChangesState = true;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Attach to color mode change events
+            BlazorEnv.OnColorModeChanged += HandleColorModeChange;
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        // Detach from color mode change events
+        BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
+        base.Dispose(disposing);
+    }
+
+    protected override Task DisposeCore()
+    {
+        // Detach from color mode change events
+        BlazorEnv.OnColorModeChanged -= HandleColorModeChange;
+        return base.DisposeCore();
+    }
+
+    private void HandleColorModeChange()
+    {
+        // Set the body background color depending on the current color mode
+        BodyParameters![nameof(Content.BackGroundColor)] = BlazorEnv.LightMode ? Colors.Light : Colors.Dark;
+    }
 }
 ```
+
+#### Modify the `Layout/NavMenu.razor`
+
+Example:
+
+```razor
+@inherits ComponentBase
+
+<Bar Flex=@Orientation.ToFlexBoxType() BackGroundGradient ShowTextHorizontal="false">
+    <BarBranding Href="/" Text="wan24-Blazor Demo" />
+    <BarItem Href="/" Text="Home" IconParameters=@Images.Icon_house.AsImageParameters() />
+    <BarItem Href="/counter" Text="Counter" IconParameters=@Images.Icon_123.AsImageParameters() />
+    <BarItem Href="/weather" Text="Weather" IconParameters=@Images.Icon_cloud.AsImageParameters() />
+</Bar>
+
+@code {
+    /// <summary>
+    /// Orientation
+    /// </summary>
+    [CascadingParameter]
+    public Orientations Orientation{ get; set; }
+}
+```
+
+#### The resulting layout
+
+Since we didn't change the pages to use the `wan24-Blazor` base components 
+yet, we'll only get a responsive layout with an orange tone as primary color. 
+The menu item text won't be visible on a portrait screen, and also the sidebar 
+will be displayed at the bottom of the layout. When you switch your browser 
+(your system settings) to dark/light mode, the colors of the layout should be 
+switched, too. When you view the app on a small (smartphone) landscape screen, 
+the sidebar won't be shown at all, because it's assumed that the user want to 
+use all the space available for content display.
 
 ### Components
 
@@ -683,7 +755,6 @@ pages and components:
 | `ErrorDialog(...)` | Display a modal error dialog |
 | `CreateElementId()` | Create an unique ID for an element |
 | `CreateSectionId()` | Create an unique section ID |
-| **`BlazorToolsShared`** | |
 | `IsHrefMatch(...)` | Determine if an absolute URI path matches another absolute URI path (completely (with or without trailing slash) or as prefix) |
 | `EqualsHrefExactlyOrIfTrailingSlashAdded(...)` | Determine if an absolute URI path matches another absolute URI path exactly (with or without trailing slash) |
 | `IsHrefStrictlyPrefixWithSeparator(...)` | Determine if an absolute URI path is the prefix of another absolute URI path |

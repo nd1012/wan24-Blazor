@@ -175,18 +175,18 @@ namespace wan24.Blazor
         public static IMenuItem? GetMatchingItem(this IMenu menu, string href, NavLinkMatch? match = null)
         {
             match ??= menu.ActiveMatch;
-            href = BlazorToolsShared.GetAbsoluteUriPathFromHref(menu.Navigation, href);
+            href = BlazorTools.GetAbsoluteUriPathFromHref(menu.Navigation, href);
             Queue<IMenuParentItem> parents = [];
             IMenuItem? res = null;
             foreach (IMenuItem item in menu.Items)
             {
-                if (item.Href is not null && BlazorToolsShared.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) res = item;
+                if (item.Href is not null && BlazorTools.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) res = item;
                 if (item is IMenuParentItem parentItem) parents.Enqueue(parentItem);
             }
             while (parents.TryDequeue(out IMenuParentItem? item))
                 foreach (IMenuItem subItem in item.Items)
                 {
-                    if (subItem.Href is not null && BlazorToolsShared.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) res = subItem;
+                    if (subItem.Href is not null && BlazorTools.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) res = subItem;
                     if (subItem is IMenuParentItem parentItem) parents.Enqueue(parentItem);
                 }
             return res;
@@ -203,18 +203,18 @@ namespace wan24.Blazor
         {
             match ??= parent.Menu?.ActiveMatch ?? NavLinkMatch.All;
             if (parent.Menu is not null)
-                href = BlazorToolsShared.GetAbsoluteUriPathFromHref(parent.Menu.Navigation, href);
+                href = BlazorTools.GetAbsoluteUriPathFromHref(parent.Menu.Navigation, href);
             Queue<IMenuParentItem> parents = [];
             IMenuItem? res = null;
             foreach (IMenuItem item in parent.Items)
             {
-                if (item.Href is not null && BlazorToolsShared.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) res = item;
+                if (item.Href is not null && BlazorTools.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) res = item;
                 if (item is IMenuParentItem parentItem) parents.Enqueue(parentItem);
             }
             while (parents.TryDequeue(out IMenuParentItem? item))
                 foreach (IMenuItem subItem in item.Items)
                 {
-                    if (subItem.Href is not null && BlazorToolsShared.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) res = subItem;
+                    if (subItem.Href is not null && BlazorTools.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) res = subItem;
                     if (subItem is IMenuParentItem parentItem) parents.Enqueue(parentItem);
                 }
             return res;
@@ -231,16 +231,16 @@ namespace wan24.Blazor
         {
             Queue<IMenuParentItem> parents = [];
             match ??= menu.ActiveMatch;
-            href = BlazorToolsShared.GetAbsoluteUriPathFromHref(menu.Navigation, href);
+            href = BlazorTools.GetAbsoluteUriPathFromHref(menu.Navigation, href);
             foreach (IMenuItem item in menu.Items)
             {
-                if (item.Href is not null && BlazorToolsShared.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) yield return item;
+                if (item.Href is not null && BlazorTools.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) yield return item;
                 if (item is IMenuParentItem parentItem) parents.Enqueue(parentItem);
             }
             while (parents.TryDequeue(out IMenuParentItem? item))
                 foreach (IMenuItem subItem in item.Items)
                 {
-                    if (subItem.Href is not null && BlazorToolsShared.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) yield return subItem;
+                    if (subItem.Href is not null && BlazorTools.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) yield return subItem;
                     if (subItem is IMenuParentItem parentItem) parents.Enqueue(parentItem);
                 }
         }
@@ -257,16 +257,16 @@ namespace wan24.Blazor
             Queue<IMenuParentItem> parents = [];
             match ??= parent.Menu?.ActiveMatch ?? NavLinkMatch.All;
             if (parent.Menu is not null)
-                href = BlazorToolsShared.GetAbsoluteUriPathFromHref(parent.Menu.Navigation, href);
+                href = BlazorTools.GetAbsoluteUriPathFromHref(parent.Menu.Navigation, href);
             foreach (IMenuItem item in parent.Items)
             {
-                if (item.Href is not null && BlazorToolsShared.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) yield return item;
+                if (item.Href is not null && BlazorTools.IsHrefMatch(item.Href, href, item.ActiveMatch ?? match.Value)) yield return item;
                 if (item is IMenuParentItem parentItem) parents.Enqueue(parentItem);
             }
             while (parents.TryDequeue(out IMenuParentItem? item))
                 foreach (IMenuItem subItem in item.Items)
                 {
-                    if (subItem.Href is not null && BlazorToolsShared.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) yield return subItem;
+                    if (subItem.Href is not null && BlazorTools.IsHrefMatch(subItem.Href, href, subItem.ActiveMatch ?? match.Value)) yield return subItem;
                     if (subItem is IMenuParentItem parentItem) parents.Enqueue(parentItem);
                 }
         }

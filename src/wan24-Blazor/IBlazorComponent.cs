@@ -9,6 +9,10 @@ namespace wan24.Blazor
     public interface IBlazorComponent : IBlazorComponentParameters, IComponent, IHandleEvent, IHandleAfterRender
     {
         /// <summary>
+        /// If the component did render
+        /// </summary>
+        bool DidRender { get; }
+        /// <summary>
         /// Factory CSS class (override to provide default class names)
         /// </summary>
         string? FactoryClass { get; }
