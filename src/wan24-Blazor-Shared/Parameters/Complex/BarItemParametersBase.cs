@@ -8,7 +8,7 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public BarItemParametersBase() : base() { }
+        public BarItemParametersBase() : base() => ComponentTagName = "li";
 
         /// <summary>
         /// Constructor
@@ -25,6 +25,7 @@
             ComponentParameters = original.ComponentParameters;
             IsActiveItem = original.IsActiveItem;
             Type = original.Type;
+            ComponentTagName = original.ComponentTagName;
         }
 
         /// <inheritdoc/>
@@ -39,6 +40,7 @@
                 if (ActiveIconParameters is not null) res[nameof(ActiveIconParameters)] = ActiveIconParameters;
                 if (TextParameters is not null) res[nameof(TextParameters)] = TextParameters;
                 if (ComponentParameters is not null) res[nameof(ComponentParameters)] = ComponentParameters;
+                if (ComponentTagName is not null) res[nameof(ComponentTagName)] = ComponentTagName;
                 res[nameof(IsActiveItem)] = IsActiveItem;
                 res[nameof(Type)] = Type;
                 return res;
@@ -54,6 +56,7 @@
             nameof(ComponentParameters),
             nameof(IsActiveItem),
             nameof(Type),
+            nameof(ComponentTagName)
             ];
 
         /// <inheritdoc/>
@@ -63,6 +66,9 @@
             nameof(ActiveIconParameters),
             nameof(TextParameters)
             ];
+
+        /// <inheritdoc/>
+        public virtual string? ComponentTagName { get; set; } = "li";
 
         /// <inheritdoc/>
         public virtual string? Href { get; set; }
@@ -80,7 +86,7 @@
         public virtual IImageParameters? ActiveIconParameters { get; set; }
 
         /// <inheritdoc/>
-        public virtual IBodyTextParameters? TextParameters { get; set; }
+        public virtual IBoxParameters? TextParameters { get; set; }
 
         /// <inheritdoc/>
         public virtual IParameters? ComponentParameters { get; set; }
@@ -104,6 +110,7 @@
                 if (ActiveIconParameters is not null && !excludeProperties.Contains(nameof(ActiveIconParameters))) item.ActiveIconParameters = ActiveIconParameters;
                 if (TextParameters is not null && !excludeProperties.Contains(nameof(TextParameters))) item.TextParameters = TextParameters;
                 if (ComponentParameters is not null && !excludeProperties.Contains(nameof(ComponentParameters))) item.ComponentParameters = ComponentParameters;
+                if (ComponentTagName is not null && !excludeProperties.Contains(nameof(ComponentTagName))) item.ComponentTagName = ComponentTagName;
                 if (!excludeProperties.Contains(nameof(IsActiveItem))) item.IsActiveItem = IsActiveItem;
                 if (!excludeProperties.Contains(nameof(Type))) item.Type = Type;
             }
@@ -122,6 +129,7 @@
                 if (ActiveIconParameters is not null && includeProperties.Contains(nameof(ActiveIconParameters))) item.ActiveIconParameters = ActiveIconParameters;
                 if (TextParameters is not null && includeProperties.Contains(nameof(TextParameters))) item.TextParameters = TextParameters;
                 if (ComponentParameters is not null && includeProperties.Contains(nameof(ComponentParameters))) item.ComponentParameters = ComponentParameters;
+                if (ComponentTagName is not null && includeProperties.Contains(nameof(ComponentTagName))) item.ComponentTagName = ComponentTagName;
                 if (includeProperties.Contains(nameof(IsActiveItem))) item.IsActiveItem = IsActiveItem;
                 if (includeProperties.Contains(nameof(Type))) item.Type = Type;
             }

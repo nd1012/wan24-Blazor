@@ -8,13 +8,7 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public BarItemParameters() : base()
-        {
-            InlineFlex = false;
-            Flex = FlexBoxTypes.Row;
-            Overflow = OverflowTypes.Hidden;
-            VAlign = VerticalAligns.Center;
-        }
+        public BarItemParameters() : base() { }
 
         /// <summary>
         /// Constructor

@@ -60,7 +60,7 @@ namespace wan24.Blazor.Components
 
         /// <inheritdoc/>
         [Parameter]
-        public virtual IBodyTextParameters? TextParameters { get; set; }
+        public virtual IBoxParameters? TextParameters { get; set; }
 
         /// <summary>
         /// Text CSS factory classes
@@ -209,7 +209,7 @@ namespace wan24.Blazor.Components
             {
                 Dictionary<string, object> res = IconFactoryAttributes ?? [];
                 if (IconParameters?.Attributes is Dictionary<string, object> attr) res.Merge(attr);
-                if ((Title is not null || Text is not null) && !res.ContainsKey("title")) res["title"] = Title ?? Text!;
+                if (!ShowText && (Title is not null || Text is not null) && !res.ContainsKey("title")) res["title"] = Title ?? Text!;
                 return res;
             }
         }
@@ -306,7 +306,7 @@ namespace wan24.Blazor.Components
             {
                 Dictionary<string, object> res = ActiveIconFactoryAttributes ?? [];
                 if (ActiveIconParameters?.Attributes is Dictionary<string, object> attr) res.Merge(attr);
-                if ((Title is not null || Text is not null) && !res.ContainsKey("title")) res["title"] = Title ?? Text!;
+                if (!ShowText && (Title is not null || Text is not null) && !res.ContainsKey("title")) res["title"] = Title ?? Text!;
                 return res;
             }
         }
@@ -380,7 +380,7 @@ namespace wan24.Blazor.Components
             {
                 Dictionary<string, object> res = base.FactoryAttributes ?? [];
                 if (TagName == "button" && !res.ContainsKey("type")) res["type"] = "button";
-                if (Title is null && Text is not null && !ShowText) res["title"] = Text;
+                if (!ShowText && Title is null && Text is not null) res["title"] = Text;
                 return res;
             }
         }

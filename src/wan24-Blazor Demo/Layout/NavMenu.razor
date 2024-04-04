@@ -1,13 +1,31 @@
-﻿@inherits ComponentBase
+﻿@using Microsoft.AspNetCore.Components.Sections;
+@inherits Box
 
-<Bar Flex=@Orientation.ToFlexBoxType() BackGroundGradient ShowTextHorizontal="false">
-    <BarBranding Href="/" Text="wan24-Blazor Demo" />
-    <BarItem Href="/" Text="Home" IconParameters=@Images.Icon_house.AsImageParameters() />
-    <BarItem Href="/counter" Text="Counter" IconParameters=@Images.Icon_123.AsImageParameters() />
-    <BarItem Href="/weather" Text="Weather" IconParameters=@Images.Icon_cloud.AsImageParameters() />
-</Bar>
+<SectionContent SectionName=@UseBoxSection>
+    <Bar Flex=@Orientation.ToFlexBoxType() ShowTextHorizontal="false">
+        <BarBranding Text="wan24-Blazor Demo" />
+        <BarItem Href="/" Text="Home" IconParameters=@Images.Icon_house.AsImageParameters() />
+        <BarItem Href="/counter" Text="Counter" IconParameters=@Images.Icon_123.AsImageParameters() />
+        <BarItem Href="/weather" Text="Weather" IconParameters=@Images.Icon_cloud.AsImageParameters() />
+    </Bar>
+</SectionContent>
+
+@{
+    base.BuildRenderTree(__builder);
+}
 
 @code {
+    public NavMenu() : base()
+    {
+        UseBoxSection = Helper.CreateSectionId();
+        Role = "navigation";
+        Class = "navbar";
+        BackGroundColor = Colors.Primary;
+        BackGroundGradient = true;
+        FlexBox = true;
+        Grow = true;
+    }
+
     [CascadingParameter]
     public Orientations Orientation{ get; set; }
 }

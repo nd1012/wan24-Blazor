@@ -27,5 +27,8 @@ namespace wan24.Blazor.Components.Complex
 
         /// <inheritdoc/>
         public override IEnumerable<string> AccessabilityProperties => BarBrandingParametersExt.Instance.AccessabilityProperties;
+
+        /// <inheritdoc/>
+        public override string? FactoryClass => $"{base.FactoryClass} navbar-brand";
     }
 }

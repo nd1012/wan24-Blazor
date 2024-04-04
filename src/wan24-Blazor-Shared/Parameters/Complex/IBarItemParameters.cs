@@ -28,9 +28,9 @@
         /// <summary>
         /// Text parameters
         /// </summary>
-        IBodyTextParameters? TextParameters { get; set; }
+        IBoxParameters? TextParameters { get; set; }
         /// <summary>
-        /// Component parameters
+        /// Component parameters (used as <see cref="BoxParameters.TagName"/> for <c>Box</c> based component parameters)
         /// </summary>
         IParameters? ComponentParameters { get; set; }
         /// <summary>
@@ -41,5 +41,9 @@
         /// Component type
         /// </summary>
         Type Type { get; set; }
+        /// <summary>
+        /// Component DOM element HTML tag name
+        /// </summary>
+        string? ComponentTagName { get; set; }
     }
 }

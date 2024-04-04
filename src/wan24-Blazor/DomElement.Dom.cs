@@ -57,9 +57,21 @@ namespace wan24.Blazor
         {
             EnsureUndisposed(allowDisposing: true);
             EnsureNode();
-            EventHandlers.Clear();
-            Elements.TryRemove(ID!, out _);
             return await Gateway.Gateway.InvokeAsync<bool>("setAttribute", cancellationToken, [ID, name, value]).DynamicContext();
+        }
+
+        /// <summary>
+        /// Set many attributes
+        /// </summary>
+        /// <param name="settings">DOM element settings to apply</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>If the settings were applied</returns>
+        [MemberNotNull(nameof(ID))]
+        public virtual async Task<bool> SetAttributesAsync(IDomElementSettings settings, CancellationToken cancellationToken = default)
+        {
+            EnsureUndisposed(allowDisposing: true);
+            EnsureNode();
+            return await Gateway.Gateway.InvokeAsync<bool>("setAttributes", cancellationToken, [ID, JsonHelper.Encode(settings, GuiEnv.IsDebug)]).DynamicContext();
         }
 
         /// <summary>
@@ -73,8 +85,6 @@ namespace wan24.Blazor
         {
             EnsureUndisposed(allowDisposing: true);
             EnsureNode();
-            EventHandlers.Clear();
-            Elements.TryRemove(ID!, out _);
             return await Gateway.Gateway.InvokeAsync<bool>("removeAttribute", cancellationToken, [ID, name]).DynamicContext();
         }
 

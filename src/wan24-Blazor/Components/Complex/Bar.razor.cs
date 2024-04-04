@@ -19,25 +19,31 @@ namespace wan24.Blazor.Components.Complex
         /// <summary>
         /// Constructor
         /// </summary>
-        public Bar() : this("nav") { }
+        public Bar() : this("ul") { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="tagName">HTML tag name</param>
-        public Bar(in string tagName) : base(tagName)
+        protected Bar(in string tagName) : base(tagName)
         {
             Id = Helper.CreateElementId();
             UseBoxSection = Helper.CreateSectionId();
-            Grow = true;
-            BackGroundColor = Colors.Primary;
-            TextParameters = new BodyTextParameters()
+            ComponentParameters = new BlazorComponentParameters()
+            {
+                Class = "nav-link",
+                InlineFlex = false,
+                Flex = FlexBoxTypes.Row,
+                Overflow = OverflowTypes.Hidden,
+                VAlign = VerticalAligns.Center
+            };
+            TextParameters = new BoxParameters()
             {
                 TextColor = Colors.Light
             };
             IconParameters = new ImageParameters()
             {
-                SvgColor = BsTheme.Current.Light?.ToHtmlString(),
+                SvgColor = BsTheme.Current.Light?.ToHtmlString() ?? Bs5Theme.Default.Light?.ToHtmlString(),
                 Size = "width:1.25rem;height:1.25rem;"
             };
         }
@@ -76,7 +82,7 @@ namespace wan24.Blazor.Components.Complex
         public virtual IImageParameters? ActiveIconParameters { get; set; }
 
         /// <inheritdoc/>
-        public virtual IBodyTextParameters? TextParameters { get; set; }
+        public virtual IBoxParameters? TextParameters { get; set; }
 
         /// <inheritdoc/>
         public virtual IParameters? ComponentParameters { get; set; }
@@ -151,7 +157,7 @@ namespace wan24.Blazor.Components.Complex
         public virtual NavLinkMatch ActiveMatch { get; set; } = NavLinkMatch.All;
 
         /// <inheritdoc/>
-        public override string? FactoryClass => $"{base.FactoryClass} nav pt-3";
+        public override string? FactoryClass => $"{base.FactoryClass} navbar-nav pt-3";
 
         /// <inheritdoc/>
         public virtual void AddMenuItem(IMenuItem item) => _Items.Add(item);

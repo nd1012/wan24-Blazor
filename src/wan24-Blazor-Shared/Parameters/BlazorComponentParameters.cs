@@ -18,6 +18,7 @@
         {
             Id = original.Id;
             Title = original.Title;
+            Role = original.Role;
             Flex = original.Flex;
             InlineFlex = original.InlineFlex;
             Grow = original.Grow;
@@ -76,6 +77,7 @@
                 Dictionary<string, object> res = [];
                 if (Id is not null) res[nameof(Id)] = Id;
                 if (Title is not null) res[nameof(Title)] = Title;
+                if(Role is not null) res[nameof(Role)] = Role;
                 res[nameof(Flex)] = Flex;
                 res[nameof(InlineFlex)] = InlineFlex;
                 res[nameof(Grow)] = Grow;
@@ -129,7 +131,7 @@
         }
 
         /// <inheritdoc/>
-        public virtual IEnumerable<string> ObjectProperties => [nameof(Id), nameof(Title)];
+        public virtual IEnumerable<string> ObjectProperties => [nameof(Id), nameof(Title), nameof(Role)];
 
         /// <inheritdoc/>
         public virtual IEnumerable<string> DesignProperties => [
@@ -192,6 +194,9 @@
 
         /// <inheritdoc/>
         public virtual string? Title { get; set; }
+
+        /// <inheritdoc/>
+        public virtual string? Role { get; set; }
 
         /// <inheritdoc/>
         public virtual string? Class { get; set; }
@@ -347,6 +352,7 @@
             {
                 if (Id is not null && !excludeProperties.Contains(nameof(Id))) blazor.Id = Id;
                 if (Title is not null && !excludeProperties.Contains(nameof(Title))) blazor.Title = Title;
+                if (Role is not null && !excludeProperties.Contains(nameof(Role))) blazor.Role = Role;
                 if (Class is not null && !excludeProperties.Contains(nameof(Class))) blazor.Class = Class;
                 if (!excludeProperties.Contains(nameof(Flex))) blazor.Flex = Flex;
                 if (!excludeProperties.Contains(nameof(InlineFlex))) blazor.InlineFlex = InlineFlex;
@@ -405,6 +411,7 @@
             {
                 if (Id is not null && includeProperties.Contains(nameof(Id))) blazor.Id = Id;
                 if (Title is not null && includeProperties.Contains(nameof(Title))) blazor.Title = Title;
+                if (Role is not null && includeProperties.Contains(nameof(Role))) blazor.Role = Role;
                 if (Class is not null && includeProperties.Contains(nameof(Class))) blazor.Class = Class;
                 if (includeProperties.Contains(nameof(Flex))) blazor.Flex = Flex;
                 if (includeProperties.Contains(nameof(InlineFlex))) blazor.InlineFlex = InlineFlex;

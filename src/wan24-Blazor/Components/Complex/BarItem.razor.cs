@@ -11,13 +11,7 @@ namespace wan24.Blazor.Components.Complex
         /// <summary>
         /// Constructor
         /// </summary>
-        public BarItem() : base(typeof(MenuItem))
-        {
-            InlineFlex = false;
-            Flex = FlexBoxTypes.Row;
-            Overflow = OverflowTypes.Hidden;
-            VAlign = VerticalAligns.Center;
-        }
+        public BarItem() : base(typeof(MenuItem)) { }
 
         /// <inheritdoc/>
         public override IParameters DefaultParameters => BarItemParametersExt.Instance;

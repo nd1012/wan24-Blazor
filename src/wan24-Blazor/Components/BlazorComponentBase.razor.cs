@@ -269,28 +269,16 @@ namespace wan24.Blazor.Components
         {
             get
             {
-                Dictionary<string, object>? factoryAttributes = FactoryAttributes,
-                    addFactoryAttributes = ComponentFactoryDefaults.Get(GetType())?.Attributes,
-                    attributes = Attributes;
-                bool visible = IsVisible,
-                    enabled = IsEnabled;
-                int capacity = (attributes?.Count ?? 0) + (factoryAttributes?.Count ?? 0) + (addFactoryAttributes?.Count ?? 0);
-                if (Id is not null) capacity++;
-                if (Title is not null) capacity++;
-                string? classNames = ClassAttribute,
-                    style = StyleAttribute;
-                if (classNames is not null) capacity++;
-                if (style is not null) capacity++;
-                if (!enabled) capacity++;
-                if (!visible) capacity++;
-                if (ForcedColorMode.HasValue) capacity++;
-                Dictionary<string, object> res = new(capacity);
-                if (factoryAttributes is not null) res.Merge(factoryAttributes);
-                if (addFactoryAttributes is not null) res.Merge(addFactoryAttributes);
+                Dictionary<string, object> res = [];
+                if (FactoryAttributes is Dictionary<string, object> factoryAttributes) res.Merge(factoryAttributes);
+                if (ComponentFactoryDefaults.Get(GetType())?.Attributes is Dictionary<string, object> addFactoryAttributes) res.Merge(addFactoryAttributes);
                 if (Id is not null) res["id"] = Id;
                 if (Title is not null) res["title"] = Title;
-                if (classNames is not null) res["class"] = classNames;
-                if (style is not null) res["style"] = style;
+                if (Role is not null) res["role"] = Role;
+                if (ClassAttribute is string classNames) res["class"] = classNames;
+                if (StyleAttribute is string style) res["style"] = style;
+                bool visible = IsVisible,
+                    enabled = IsEnabled;
                 if (!enabled)
                 {
                     res["disabled"] = "disabled";
@@ -303,7 +291,7 @@ namespace wan24.Blazor.Components
                 }
                 if (IsActive && enabled && visible) res["aria-current"] = "true";
                 if (ForcedColorMode.HasValue) res["data-bs-theme"] = (ForcedColorMode.Value & BsThemeMode.Dark) == BsThemeMode.Dark ? "dark" : "light";
-                if (attributes is not null) res.Merge(attributes);
+                if (Attributes is Dictionary<string, object> attributes) res.Merge(attributes);
                 return res;
             }
         }

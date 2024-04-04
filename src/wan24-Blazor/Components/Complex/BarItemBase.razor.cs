@@ -12,7 +12,7 @@ namespace wan24.Blazor.Components.Complex
     /// <remarks>
     /// Constructor
     /// </remarks>
-    /// <param name="type">Menu item component type (must be a <see cref="ComponentBase"/>, should be an <see cref="IBlazorComponent"/>)</param>
+    /// <param name="type">Menu item component type (must be an <see cref="IComponent"/>, should be an <see cref="IBlazorComponent"/>)</param>
     public abstract partial class BarItemBase(in Type type) : ParentComponentBase(), IBarItemParametersExt, IMenuItemComponentHost, IMenuParentItem
     {
         /// <summary>
@@ -23,6 +23,10 @@ namespace wan24.Blazor.Components.Complex
         /// <inheritdoc/>
         [CascadingParameter]
         public virtual IMenu? Menu { get; set; }
+
+        /// <inheritdoc/>
+        [CascadingParameter]
+        public virtual Orientations? MenuOrientation { get; set; }
 
         /// <inheritdoc/>
         [Parameter, CascadingParameter]
@@ -60,7 +64,7 @@ namespace wan24.Blazor.Components.Complex
 
         /// <inheritdoc/>
         [Parameter]
-        public virtual IBodyTextParameters? TextParameters { get; set; }
+        public virtual IBoxParameters? TextParameters { get; set; }
 
         /// <inheritdoc/>
         [Parameter]
@@ -81,6 +85,10 @@ namespace wan24.Blazor.Components.Complex
         [Parameter]
         public virtual Type Type { get; set; } = type;
 
+        /// <inheritdoc/>
+        [Parameter]
+        public virtual string? ComponentTagName { get; set; } = "li";
+
         /// <summary>
         /// Component element parameters
         /// </summary>
@@ -88,7 +96,8 @@ namespace wan24.Blazor.Components.Complex
         {
             get
             {
-                Dictionary<string, object> res = [];
+                Dictionary<string, object> res = ComponentParameters?.AllParameters ?? [];
+                if (ComponentTagName is not null) res[nameof(Box.TagName)] = ComponentTagName;
                 if (Href is not null) res[nameof(Href)] = Href;
                 if (ClickHandler is not null) res[nameof(ClickHandler)] = ClickHandler;
                 if (Target is not null) res[nameof(Target)] = Target;
@@ -96,12 +105,29 @@ namespace wan24.Blazor.Components.Complex
                 if (IconParameters is not null) res[nameof(IconParameters)] = IconParameters;
                 if (ActiveIconParameters is not null) res[nameof(ActiveIconParameters)] = ActiveIconParameters;
                 if (TextParameters is not null) res[nameof(TextParameters)] = TextParameters;
-                if (ComponentParameters is not null) res[nameof(ComponentParameters)] = ComponentParameters;
                 if (ActiveMatch.HasValue) res[nameof(ActiveMatch)] = ActiveMatch.Value;
                 res[nameof(IsActiveItem)] = IsActiveItem;
+                if (ComponentParameters is null || ComponentParameters is IBlazorComponentParameters)
+                {
+                    if (IsActiveItem && this.GetActiveItem() == this)
+                    {
+                        res.TryAdd(nameof(Attributes), new Dictionary<string, string>());
+                        Dictionary<string, string> attributes = res[nameof(Attributes)] as Dictionary<string, string>
+                            ?? throw new InvalidDataException($"Invalid component parameters value type for {nameof(Attributes)} (expected {typeof(Dictionary<string, string>)})");
+                        attributes["aria-current"] = "page";
+                    }
+                    if (FactoryClass is string factoryClass && !string.IsNullOrWhiteSpace(factoryClass))
+                        res[nameof(Class)] = $"{(res.TryAdd(nameof(Class), string.Empty) ? $"{res[nameof(Class)]} " : string.Empty)}{factoryClass}";
+                    if (FactoryStyle is string factoryStyle && !string.IsNullOrWhiteSpace(factoryStyle))
+                        res[nameof(Style)] = $"{(res.TryAdd(nameof(Style), string.Empty) ? $"{res[nameof(Style)]};" : string.Empty)}{factoryStyle};";
+                }
                 return res;
             }
         }
+
+        /// <inheritdoc/>
+        public override string? FactoryClass
+            => $"{base.FactoryClass} nav-item {(MenuOrientation.HasValue && MenuOrientation.Value == Orientations.Vertical ? "flex-fill" : string.Empty)}";
 
         /// <inheritdoc/>
         public virtual void AddMenuItem(IMenuItem item) => _Items.Add(item);
@@ -138,7 +164,7 @@ namespace wan24.Blazor.Components.Complex
                 }
                 if (TextParameters is null)
                 {
-                    if (Menu.TextParameters is not null) TextParameters = new BodyTextParameters(Menu.TextParameters);
+                    if (Menu.TextParameters is not null) TextParameters = new BoxParameters(Menu.TextParameters);
                 }
                 else
                 {

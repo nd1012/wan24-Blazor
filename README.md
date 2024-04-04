@@ -264,6 +264,7 @@ Example:
         Theme = Bs5Theme.Demo;
         // Configure the sidebar
         Sidebar = typeof(NavMenu);
+        SidebarTag = "nav";
         ShowSidebarOnSmallLandscape = false;
         // Configure the body
         BodyParameters = new()
@@ -312,19 +313,34 @@ Example:
 Example:
 
 ```razor
-@inherits ComponentBase
+@using Microsoft.AspNetCore.Components.Sections;
+@inherits Box
 
-<Bar Flex=@Orientation.ToFlexBoxType() BackGroundGradient ShowTextHorizontal="false">
-    <BarBranding Href="/" Text="wan24-Blazor Demo" />
-    <BarItem Href="/" Text="Home" IconParameters=@Images.Icon_house.AsImageParameters() />
-    <BarItem Href="/counter" Text="Counter" IconParameters=@Images.Icon_123.AsImageParameters() />
-    <BarItem Href="/weather" Text="Weather" IconParameters=@Images.Icon_cloud.AsImageParameters() />
-</Bar>
+<SectionContent SectionName=@UseBoxSection>
+    <Bar Flex=@Orientation.ToFlexBoxType() ShowTextHorizontal="false">
+        <BarBranding Text="wan24-Blazor Demo" />
+        <BarItem Href="/" Text="Home" IconParameters=@Images.Icon_house.AsImageParameters() />
+        <BarItem Href="/counter" Text="Counter" IconParameters=@Images.Icon_123.AsImageParameters() />
+        <BarItem Href="/weather" Text="Weather" IconParameters=@Images.Icon_cloud.AsImageParameters() />
+    </Bar>
+</SectionContent>
+
+@{
+    base.BuildRenderTree(__builder);
+}
 
 @code {
-    /// <summary>
-    /// Orientation
-    /// </summary>
+    public NavMenu() : base()
+    {
+        UseBoxSection = Helper.CreateSectionId();
+        Role = "navigation";
+        Class = "navbar";
+        BackGroundColor = Colors.Primary;
+        BackGroundGradient = true;
+        FlexBox = true;
+        Grow = true;
+    }
+
     [CascadingParameter]
     public Orientations Orientation{ get; set; }
 }
@@ -512,8 +528,8 @@ control their display behavior as required.
 | `FlexLayoutFooter` | Override the footer of the layout | `ComponentBase` | - | - |
 | `FlexLayoutBottomBooter` | Override the bottom footer of the layout | `ComponentBase` | - | - |
 | **Complex** |  |  |  |  |
-| `Bar` | A menu bar | `Box` | `div` | - |
-| `BarItemBase` | An abstract base component for a menu bar item | `ParentComponentBase` | - | - |
+| `Bar` | A menu bar | `Box` | `ul` | - |
+| `BarItemBase` | An abstract base component for a menu bar item | `Box` | `li` | - |
 | `BarItem` | A menu bar item | `BarItemBase` | - | - |
 | `BarBranding` | A menu bar branding | `BarItem` | - | - |
 | **Others** |  |  |  |  |

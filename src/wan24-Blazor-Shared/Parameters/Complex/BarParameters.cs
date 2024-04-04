@@ -11,15 +11,22 @@ namespace wan24.Blazor.Parameters.Complex
         /// </summary>
         public BarParameters() : base()
         {
-            Grow = true;
-            BackGroundColor = Colors.Primary;
+            TagName = "ul";
+            ComponentParameters = new BlazorComponentParameters()
+            {
+                Class = "nav-link",
+                InlineFlex = false,
+                Flex = FlexBoxTypes.Row,
+                Overflow = OverflowTypes.Hidden,
+                VAlign = VerticalAligns.Center
+            };
             TextParameters = new BodyTextParameters()
             {
                 TextColor = Colors.Light
             };
             IconParameters = new ImageParameters()
             {
-                SvgColor = BsTheme.Current.Light?.ToHtmlString(),
+                SvgColor = BsTheme.Current.Light?.ToHtmlString() ?? Bs5Theme.Default.Light?.ToHtmlString(),
                 Size = "width:1.25rem;height:1.25rem;"
             };
         }
@@ -94,7 +101,7 @@ namespace wan24.Blazor.Parameters.Complex
         public virtual IImageParameters? ActiveIconParameters { get; set; }
 
         /// <inheritdoc/>
-        public virtual IBodyTextParameters? TextParameters { get; set; }
+        public virtual IBoxParameters? TextParameters { get; set; }
 
         /// <inheritdoc/>
         public virtual IParameters? ComponentParameters { get; set; }

@@ -380,6 +380,123 @@ export class DownloadStream {
 }
 
 /**
+ * DOM element settings
+ */
+export class DomElementSettings {
+    /**
+     * CSS classes
+     */
+    #_Class: string = null;
+    /**
+     * CSS style
+     */
+    #_Style: string = null;
+    /**
+     * Additional attributes
+     */
+    #_Attributes: Map<string, any> = null;
+
+    /**
+     * Constructor
+     */
+    constructor() { }
+
+    /**
+     * Get CSS classes
+     */
+    get Class(): string {
+        return this.#_Class;
+    }
+    /**
+     * Set CSS classes
+     */
+    set Class(value: string) {
+        this.#_Class = value;
+    }
+
+    /**
+     * Get CSS style
+     */
+    get Style(): string {
+        return this.#_Style;
+    }
+    /**
+     * Set CSS style
+     */
+    set Style(value: string) {
+        this.#_Style = value;
+    }
+
+    /**
+     * Get additional attributes
+     */
+    get Attributes(): Map<string, string> {
+        return this.#_Attributes;
+    }
+    /**
+     * Set additional attributes
+     */
+    set Attributes(value: Map<string, any>) {
+        this.#_Attributes = value;
+    }
+
+    /**
+     * Apply to a DOM element
+     * 
+     * @param element DOM element
+     * @returns DOM element
+     */
+    ApplyTo(element: Element) : Element {
+        if (this.Class != null) {
+            const classNames = new Set<string>(),
+                classes: Array<string> = this.Class.split(' '),
+                len: number = classes.length;
+            for (let i: number = 0, name: string; i < len; i++) {
+                name = classes[i].trim();
+                if (name == '') continue;
+                classNames.add(name);
+            }
+            element.setAttribute('class', Array.from(classNames).join(' '));
+        }
+        if (this.Style != null) element.setAttribute('style', this.Style);
+        if (this.Attributes != null) {
+            const attrs: Map<string, any> = this.Attributes,
+                keys: Array<string> = Array.from(attrs.keys()),
+                len: number = keys.length;
+            for (let i: number = 0; i < len; element.setAttribute(keys[i], attrs.get(keys[i]).toString()), i++);
+        }
+        return element;
+    }
+
+    /**
+     * Parse from JSON
+     * 
+     * @param json JSON string
+     * @returns DOM element settings
+     */
+    static FromJson(json: string): DomElementSettings {
+        const res: DomElementSettings = new DomElementSettings();
+        JSON.parse(json, (k, v) => {
+            switch (k) {
+                case 'Class':
+                    res.Class = v;
+                    break;
+                case 'Style':
+                    res.Style = v;
+                    break;
+                case 'Attributes':
+                    res.Attributes = new Map<string, any>(v);
+                    break;
+                default:
+                    console.warn('Unknown DOM element settings property', json, k, v);
+                    break;
+            }
+        });
+        return res;
+    }
+}
+
+/**
  * Elements (required for managing event listeners; key is the ID)
  */
 const Elements: Map<string, AbstractDomElement> = new Map<string, AbstractDomElement>();
@@ -589,6 +706,20 @@ export function setAttribute(id: string, name: string, value: string): boolean {
     const element: Element = document.getElementById(id);
     if (!element) return false;
     element.setAttribute(name, value);
+    return true;
+}
+
+/**
+ * Set many element attributes
+ * 
+ * @param id ID
+ * @param settings JSON encoded DOM element settings
+ * @returns If the attributes were set
+ */
+export function setAttributes(id: string, settings: string): boolean {
+    const element: Element = document.getElementById(id);
+    if (!element) return false;
+    DomElementSettings.FromJson(settings).ApplyTo(element);
     return true;
 }
 

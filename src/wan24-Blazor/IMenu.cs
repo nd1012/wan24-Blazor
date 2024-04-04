@@ -34,7 +34,7 @@ namespace wan24.Blazor
         /// <summary>
         /// Text parameters
         /// </summary>
-        IBodyTextParameters? TextParameters { get; }
+        IBoxParameters? TextParameters { get; }
         /// <summary>
         /// Component parameters
         /// </summary>

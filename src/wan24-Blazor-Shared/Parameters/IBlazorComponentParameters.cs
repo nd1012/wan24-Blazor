@@ -3,7 +3,7 @@
     /// <summary>
     /// Interface for a type which exports Blazor parameters
     /// </summary>
-    public interface IBlazorComponentParameters : IParameters
+    public interface IBlazorComponentParameters : IParameters, IDomElementSettings
     {
         /// <summary>
         /// Object properties (names of properties which serve object/component configuration)
@@ -26,9 +26,9 @@
         /// </summary>
         string? Title { get; set; }
         /// <summary>
-        /// CSS classes
+        /// HTML role
         /// </summary>
-        string? Class { get; set; }
+        string? Role { get; set; }
         /// <summary>
         /// Flex box type
         /// </summary>
@@ -158,10 +158,6 @@
         /// </summary>
         bool IsActive { get; set; }
         /// <summary>
-        /// CSS style
-        /// </summary>
-        string? Style { get; set; }
-        /// <summary>
         /// CSS color value (not the class name)
         /// </summary>
         string? Color { get; set; }
@@ -173,10 +169,6 @@
         /// Z-Index
         /// </summary>
         int? ZIndex { get; set; }
-        /// <summary>
-        /// Additional attributes of the DOM element
-        /// </summary>
-        Dictionary<string, object>? Attributes { get; set; }
         /// <summary>
         /// If the DOM element is disabled
         /// </summary>

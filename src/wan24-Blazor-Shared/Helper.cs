@@ -1,5 +1,6 @@
-﻿using System.Net.Mail;
-using wan24.Core;
+﻿using System.Collections.Frozen;
+using System.Net.Mail;
+using System.Security.Cryptography;
 
 namespace wan24.Blazor
 {
@@ -8,6 +9,11 @@ namespace wan24.Blazor
     /// </summary>
     public static class Helper
     {
+        /// <summary>
+        /// Alphabet
+        /// </summary>
+        public static readonly FrozenSet<char> Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToFrozenSet();
+
         /// <summary>
         /// Cloak a credit card number (show only the first and the last number block)
         /// </summary>
@@ -55,7 +61,8 @@ namespace wan24.Blazor
         /// Create a unique element ID
         /// </summary>
         /// <returns>Element ID</returns>
-        public static string CreateElementId() => $"{new string(new Uid().GetBytes().Encode())}{DateTime.Now.Ticks}";
+        public static string CreateElementId()
+            => $"{new string([.. Enumerable.Range(0, 10).Select(i => Alphabet.Items.AsSpan()[RandomNumberGenerator.GetInt32(0, Alphabet.Count)])])}{DateTime.Now.Ticks}";
 
         /// <summary>
         /// Create a unique section ID, if a condition is <see langword="true"/>

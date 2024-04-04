@@ -11,6 +11,11 @@ namespace wan24.Blazor
     public static class Images
     {
         /// <summary>
+        /// Data URI prefix
+        /// </summary>
+        public const string DATA_URI_PREFIX = "data:image/svg+xml;base64, ";
+
+        /// <summary>
         /// All image properties (key is the filename with the <c>Icon_</c> prefix and without extension)
         /// </summary>
         private static readonly FrozenDictionary<string, PropertyInfoExt> All;
@@ -41,18 +46,22 @@ namespace wan24.Blazor
         /// <returns>Raw SVG XML</returns>
         public static string AsSvgXml(this string image)
         {
-            if (!image.StartsWith("data:image/svg+xml;base64, ")) throw new ArgumentException("Not a valid data URI", nameof(image));
-            return image.AsSpan(27).DecodeBase64().ToUtf8String();
+            if (!image.StartsWith(DATA_URI_PREFIX)) throw new ArgumentException("Not a valid data URI", nameof(image));
+            return image.AsSpan(DATA_URI_PREFIX.Length).DecodeBase64().ToUtf8String();
         }
 
         /// <summary>
         /// Get SVG image parameters from an image data URI
         /// </summary>
         /// <param name="image">Image data URI</param>
+        /// <param name="classes">CSS classes</param>
+        /// <param name="style">CSS style</param>
         /// <returns>Image parameters</returns>
-        public static ImageParameters AsImageParameters(this string image) => new()
+        public static ImageParameters AsImageParameters(this string image, in string? classes = null, in string? style = null) => new()
         {
-            SvgXml = AsSvgXml(image)
+            SvgXml = AsSvgXml(image),
+            Style = style,
+            Class = classes
         };
 
         /// <summary>

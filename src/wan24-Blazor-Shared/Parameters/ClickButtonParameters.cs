@@ -68,7 +68,7 @@ namespace wan24.Blazor.Parameters
         public virtual string? Text { get; set; }
 
         /// <inheritdoc/>
-        public virtual IBodyTextParameters? TextParameters { get; set; }
+        public virtual IBoxParameters? TextParameters { get; set; }
 
         /// <inheritdoc/>
         public virtual IImageParameters? IconParameters { get; set; }

@@ -24,7 +24,7 @@
         /// <summary>
         /// Text parameters
         /// </summary>
-        IBodyTextParameters? TextParameters { get; set; }
+        IBoxParameters? TextParameters { get; set; }
         /// <summary>
         /// Component parameters
         /// </summary>

@@ -53,7 +53,7 @@ namespace wan24.Blazor
         /// <summary>
         /// Text parameters
         /// </summary>
-        IBodyTextParameters? TextParameters { get; }
+        IBoxParameters? TextParameters { get; }
         /// <summary>
         /// Get/set if this is an active item
         /// </summary>

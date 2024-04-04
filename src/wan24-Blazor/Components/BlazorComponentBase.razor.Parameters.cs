@@ -20,6 +20,10 @@ namespace wan24.Blazor.Components
 
         /// <inheritdoc/>
         [Parameter]
+        public virtual string? Role { get; set; }
+
+        /// <inheritdoc/>
+        [Parameter]
         public virtual string? Class { get; set; }
 
         /// <inheritdoc/>
