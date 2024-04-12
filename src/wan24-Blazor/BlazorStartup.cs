@@ -1,5 +1,6 @@
 ﻿using BlazorPro.BlazorSize;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using wan24.Core;
 
 namespace wan24.Blazor
@@ -40,13 +41,15 @@ namespace wan24.Blazor
         /// <param name="services">Services</param>
         private static void SyncStart(in IServiceCollection services)
         {
-            services.AddMediaQueryService();
-            services.AddResizeListener(options =>
-            {
-                options.ReportRate = 300;
-                options.SuppressInitEvent = false;
-                if (GuiEnv.IsDebug) options.EnableLogging = true;
-            });
+            services.AddSingleton(HtmlTranslation.Instance)
+                .AddTransient<IStringLocalizer, Translation>(services => Translation.Current ?? throw new InvalidOperationException("No current translation set"))
+                .AddMediaQueryService()
+                .AddResizeListener(options =>
+                {
+                    options.ReportRate = 300;
+                    options.SuppressInitEvent = false;
+                    if (GuiEnv.IsDebug) options.EnableLogging = true;
+                });
         }
     }
 }

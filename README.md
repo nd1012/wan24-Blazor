@@ -141,6 +141,7 @@ Optional imports which may be helpful:
 @using static wan24.Blazor.GuiEnv;// GUI enironment
 @using static wan24.Blazor.Helper;// Useful helper methods
 @using static wan24.Blazor.ToastLogger;// Toast message helper
+@using static wan24.Blazor.HtmlTranslation;// HTML translation helper
 
 // i8n tools
 @using static wan24.Core.Translation;// i8n
@@ -801,6 +802,7 @@ pages and components:
 | **`Translation`** | |
 | `Translate(...)` | Translate a text (`_` is a shortcut for that method) |
 | `TraslatePlural(...)` | Translate a plural text (`_` is a shortcut for that method) |
+| `GetHtmlTerm(...)` | Translate a (plural) term which contains HTML (will HTML encode given parser variables) |
 | **`Helper`** | |
 | `CloakCreditCardNumber` | Show only the first and the last number block of a credit card number |
 | `CloakPhoneNumber` | Show only the first 4 and the last 2 digits of a phone number |
@@ -924,3 +926,26 @@ WebAssembly:
 - **BlazorPro.BlazorSize** - reports viewport size changes ([GitHub](https://github.com/EdCharbeneau/BlazorSize))
 
 They're there already, so why not use them in your code, too, if applicable?
+
+### HTML localization
+
+In the .NET Framework you can use the `IHtmlLocalization` - but this interface 
+and the logic behind seems to be missing in ASP.NET Core. For this any other 
+reasons `wan24-Core` implements its own i8n helpers, and for translating a 
+term which contains HTML and consumes parser data you can use the 
+`HtmlTranslation`, which is available as singleton service or from the static 
+`HtmlTranslation.Instance` property:
+
+```razor
+@using static wan24.Blazor.HtmlTranslation;
+
+@GetHtmlTerm("<b>{0}</b>", anyVariable);
+```
+
+The `GetHtmlTerm` method HTML encodes parser variables and returns a 
+`MarkupString`, which will be rendered 1:1.
+
+For more information about the [`wan24-Core`](https://github.com/WAN-Solutions/wan24-Core) 
+implemented localization please visit the GitHub repository and also have a 
+look at [`wan24-I8NTool`](https://github.com/nd1012/wan24-I8NTool) and 
+[`wan24-I8NGUI`](https://github.com/nd1012/wan24-I8NGUI).
