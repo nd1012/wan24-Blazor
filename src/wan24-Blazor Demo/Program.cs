@@ -9,7 +9,6 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 // Initialize wan24-Core
 Translation.Current = Translation.Dummy;
 Logging.Logger = new ConsoleLogger();
-ErrorHandling.ErrorHandler = (e) => Logging.WriteError(e.Exception.ToString());
 
 // Initialize wan24-Blazor-Shared
 BuildTypes build = BuildTypes.Browser;

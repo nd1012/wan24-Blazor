@@ -1,0 +1,9 @@
+﻿@inherits Box
+@implements IChapterParametersExt
+
+@if(IsVisible)
+{
+    <CascadingValue Value=@this>
+        @RenderContent()
+    </CascadingValue>
+}

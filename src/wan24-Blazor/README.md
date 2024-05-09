@@ -685,16 +685,12 @@ Using the `Images` class you can access all (2000+) Bootstrap Icons as data
 stream URI (for use in `<img src="..." />` in HTML or `url('...')` in CSS):
 
 ```razor
-<Image Src=@Images.Icon_123 />
+<Image Src=@Images.Icon_123 Width="24" Height="24" />
 ```
 
-**WARNING**: Width, height and viewport attributes are removed from the 
-original SVG XML! You should set a width and a height using the `Width` and 
-`Height` properties.
-
-**NOTE**: You can't access the Bootstrap Icons via http URI, because the files 
-aren't included in the `wan24-Blazor` library. They're only accessable using 
-the `Images` class.
+**WARNING**: Width and height attributes are removed from the original SVG 
+XML! You should set a width and a height using the `Width` and `Height` 
+properties (or use the `Style` property instead).
 
 **NOTE**: You can't access the Bootstrap Icons via http URI, because the files 
 aren't included in the `wan24-Blazor` library. They're only accessable using 
@@ -714,15 +710,15 @@ icon:
 string svg = Images.Icon_123.AsSvgXml();
 ```
 
-**WARNING**: Width, height and viewport attributes are removed from the 
-original SVG XML! You should set a width and a height using the `Width` and 
-`Height` properties (or use the `Style` property instead).
-
 To display it in HTML (so you can apply CSS on it):
 
 ```razor
 <Image SvgXml=@Images.Icon_123.AsSvgXml() Width="24" Height="24" />
 ```
+
+**WARNING**: Width and height attributes are removed from the original SVG 
+XML! You should set a width and a height using the `Width` and `Height` 
+properties (or use the `Style` property instead).
 
 Or render the SVG XML directly:
 
@@ -816,15 +812,10 @@ current scope (because they are, by `using static...`).
 Example:
 
 ```cs
-using BlazorGateway gateway = await BlazorGateway.CreateAsync(jsRuntime);
-using DomElement element = await gateway.GetElementByIdAsync('ID');
+await BlazorGateway.CreateAsync(jsRuntime);
+using DomElement element = await BlazorGateway.Instance.GetElementByIdAsync('ID');
 await element.RemoveAsync();
 ```
-
-**NOTE**: `BlazorGateway` and `DomElement` implement `IAsyncDisposable`. You 
-should prefer to dispose asynchronous (`await using(...)`)! You can set a 
-`BlazorGateway` instance to the static `Instance` property for sharing it - or 
-you can use it with singleton DI.
 
 **WARNING**: `BlazorGateway` should be instanced only once - creating a 2nd 
 instance would throw an exception!
@@ -858,14 +849,9 @@ manipulation only as an exception, if nothing else works!
 Example:
 
 ```cs
-using BlazorGateway gateway = await BlazorGateway.CreateAsync(jsRuntime);
-await gateway.SendFileDownloadAsync(sourceStream, "filename.ext");
+await BlazorGateway.CreateAsync(jsRuntime);
+await BlazorGateway.Instance.SendFileDownloadAsync(sourceStream, "filename.ext");
 ```
-
-**NOTE**: `BlazorGateway` implement `IAsyncDisposable`. You should prefer to 
-dispose asynchronous (`await using(...)`)! You can set a `BlazorGateway` 
-instance to the static `Instance` property for sharing it - or you can use it 
-with singleton DI.
 
 Of course this only makes sense when running in a WebAssembly context in a 
 browser. Within a .NET MAUI app you should use a `FileStream` for saving a 
@@ -915,19 +901,7 @@ By using the `BlazorGateway.AddDownloadStreamChunk` method you can feed a
 running stream from the Blazor WebAssembly also. Internal the 
 `BlazorGateway.SendFileDownloadAsync` method uses a `DownloadStream`, too.
 
-## Referenced NuGet packages
-
-These non-default NuGet packages are referenced and included into the 
-WebAssembly:
-
-- **wan24-Core** - many .NET extensions and helpers ([GitHub](https://github.com/WAN-Solutions/wan24-Core))
-- **ObjectValidation** - deep object validation ([GitHub](https://github.com/nd1012/ObjectValidation))
-- **BlazorComponentUtilities** - helps with building CSS ([GitHub](https://github.com/EdCharbeneau/BlazorComponentUtilities))
-- **BlazorPro.BlazorSize** - reports viewport size changes ([GitHub](https://github.com/EdCharbeneau/BlazorSize))
-
-They're there already, so why not use them in your code, too, if applicable?
-
-### HTML localization
+## HTML localization
 
 In the .NET Framework you can use the `IHtmlLocalization` - but this interface 
 and the logic behind seems to be missing in ASP.NET Core. For this any other 
@@ -949,3 +923,15 @@ For more information about the [`wan24-Core`](https://github.com/WAN-Solutions/w
 implemented localization please visit the GitHub repository and also have a 
 look at [`wan24-I8NTool`](https://github.com/nd1012/wan24-I8NTool) and 
 [`wan24-I8NGUI`](https://github.com/nd1012/wan24-I8NGUI).
+
+## Referenced NuGet packages
+
+These non-default NuGet packages are referenced and included into the 
+WebAssembly:
+
+- **wan24-Core** - many .NET extensions and helpers ([GitHub](https://github.com/WAN-Solutions/wan24-Core))
+- **ObjectValidation** - deep object validation ([GitHub](https://github.com/nd1012/ObjectValidation))
+- **BlazorComponentUtilities** - helps with building CSS ([GitHub](https://github.com/EdCharbeneau/BlazorComponentUtilities))
+- **BlazorPro.BlazorSize** - reports viewport size changes ([GitHub](https://github.com/EdCharbeneau/BlazorSize))
+
+They're there already, so why not use them in your code, too, if applicable?
