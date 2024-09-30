@@ -20,10 +20,10 @@ namespace wan24.Blazor
         /// </summary>
         static Images()
         {
-            PropertyInfoExt[] properties = typeof(Images).GetPropertiesCached();
-            int len = properties.Length;
+			FrozenSet<PropertyInfoExt> properties = ReflectionExtensions.GetCachedProperties(typeof(Images));
+            int len = properties.Count;
             Dictionary<string, PropertyInfoExt> images = new(len);
-            for (int i = 0; i < len; images[properties[i].Name] = properties[i], i++) ;
+            for (int i = 0; i < len; images[properties.Items[i].Name] = properties.Items[i], i++) ;
             All = images.ToFrozenDictionary();
         }
 

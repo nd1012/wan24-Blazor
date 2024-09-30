@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wan24-Core", "..\..\wan24-C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectValidation", "..\..\ObjectValidation\src\ObjectValidation\ObjectValidation.csproj", "{F8C3F780-1BC3-495B-B537-B454869C534C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Referenced", "Referenced", "{B20A108F-72A6-46FA-8335-293DF68A1FD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,7 +76,14 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{54BA7218-7EBF-42B5-8CB4-DE915F1B9BC4} = {B20A108F-72A6-46FA-8335-293DF68A1FD9}
+		{F8C3F780-1BC3-495B-B537-B454869C534C} = {B20A108F-72A6-46FA-8335-293DF68A1FD9}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9805544E-7850-4938-A938-CA61660CD619}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\wan24-Core\src\Others\wan24-Core-Shared\src\wan24-Core-Shared\wan24-Core-Shared.projitems*{54ba7218-7ebf-42b5-8cb4-de915f1b9bc4}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
